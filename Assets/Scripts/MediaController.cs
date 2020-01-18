@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Video;    
+using UnityEngine.Video;
 
 public class MediaController : MonoBehaviour
 {
@@ -28,6 +28,8 @@ public class MediaController : MonoBehaviour
     public Image vs8;
     public Image vs9;
 
+    public Button ButtonStartExperiment;
+    public Text TopText;
 
     // Start is called before the first frame update
     //void Start()
@@ -48,11 +50,43 @@ public class MediaController : MonoBehaviour
     //    //}
     //}
 
-    public void OnClickPlayVideo()
+    public void OnClickStartExperiment()
     {
-        if (this.audioSource != null) this.audioSource.Stop();
-        videoScreen.enabled = true;
-        imageScreen.enabled = false;
+        StartCoroutine(StartExperiment());
+    }
+
+    IEnumerator StartExperiment()
+    {
+        yield return new WaitForSeconds(.5f);
+
+        yield return StartCoroutine(PlayVideo());
+        yield return StartCoroutine(Sleep(60)); // Duration of the Video: 60s
+        yield return StartCoroutine(Sleep(30)); // 30s break
+
+        yield return StartCoroutine(ShowManikin());
+        yield return StartCoroutine(Sleep(30)); // 30s display time
+        yield return StartCoroutine(Sleep(30)); // 30s break
+
+        yield return StartCoroutine(PlayImage());
+        yield return StartCoroutine(Sleep(30)); // 30s display time
+        yield return StartCoroutine(Sleep(30)); // 30s break
+
+        yield return StartCoroutine(ShowManikin());
+        yield return StartCoroutine(Sleep(30)); // 30s display time
+        yield return StartCoroutine(Sleep(30)); // 30s break
+
+        yield return StartCoroutine(PlayAudio());
+        yield return StartCoroutine(Sleep(187)); // Duration of the Audio: 187s
+        yield return StartCoroutine(Sleep(30)); // 30s break
+
+        yield return StartCoroutine(ShowManikin());
+        yield return StartCoroutine(Sleep(30)); // 30s display time
+        yield return StartCoroutine(Sleep(30)); // 30s break
+    }
+
+    IEnumerator PlayVideo()
+    {
+        yield return StartCoroutine(ScreenSetups(true));
 
         videoPlayer = gameObject.AddComponent<VideoPlayer>();
         var audioSource = gameObject.AddComponent<AudioSource>();
@@ -67,42 +101,70 @@ public class MediaController : MonoBehaviour
         videoPlayer.SetTargetAudioSource(0, audioSource);
 
         videoPlayer.Play();
+
+        yield return null;
     }
 
-    public void OnClickPlayImage()
+    IEnumerator PlayImage()
     {
-        if (videoPlayer != null) videoPlayer.Stop();
-        if (audioSource != null) audioSource.Stop();
-        videoScreen.enabled = false;
-        imageScreen.enabled = true;
+        yield return StartCoroutine(ScreenSetups(false, true));
+
+        yield return null;
     }
 
-    public void OnClickPlayAudio()
+    IEnumerator PlayAudio()
     {
-        if (videoPlayer != null) videoPlayer.Stop();
-        videoScreen.enabled = false;
-        imageScreen.enabled = false;
+        yield return StartCoroutine(ScreenSetups());
 
         audioSource.clip = audioClip;
         audioSource.Play(0);
+
+        yield return null;
     }
 
-    public void OnClickShowValence()
+    IEnumerator ShowManikin()
+    {
+        yield return StartCoroutine(ScreenSetups(false, false, true, true, true, true, true, true, true, true, true));
+
+        yield return null;
+    }
+
+    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool vs1On = false, bool vs2On = false, bool vs3On = false, bool vs4On = false, bool vs5On = false, bool vs6On = false, bool vs7On = false, bool vs8On = false, bool vs9On = false, bool buttonStartExperimentOn = false, string topText = "")
     {
         if (videoPlayer != null) videoPlayer.Stop();
         if (audioSource != null) audioSource.Stop();
-        videoScreen.enabled = false;
-        imageScreen.enabled = false;
+        videoScreen.enabled = videoScreenOn;
+        imageScreen.enabled = imageScreenOn;
 
-        vs1.enabled = true;
-        vs2.enabled = true;
-        vs3.enabled = true;
-        vs4.enabled = true;
-        vs5.enabled = true;
-        vs6.enabled = true;
-        vs7.enabled = true;
-        vs8.enabled = true;
-        vs9.enabled = true;
+        vs1.enabled = vs1On;
+        vs2.enabled = vs2On;
+        vs3.enabled = vs3On;
+        vs4.enabled = vs4On;
+        vs5.enabled = vs5On;
+        vs6.enabled = vs6On;
+        vs7.enabled = vs7On;
+        vs8.enabled = vs8On;
+        vs9.enabled = vs9On;
+
+        ButtonStartExperiment.gameObject.SetActive(buttonStartExperimentOn);
+        TopText.text = topText;
+
+        yield return null;
+    }
+
+    IEnumerator Sleep(float timeToWait)
+    {
+        float counter = 0;
+
+        while (counter < timeToWait)
+        {
+            //Increment Timer until counter >= waitTime
+            counter += Time.deltaTime;
+            Debug.Log("You still have: " + Convert.ToString(timeToWait - counter) + " seconds");
+
+            //Wait for a frame so that Unity doesn't freeze
+            yield return null;
+        }
     }
 
     public void OnClickVS1()
