@@ -1,13 +1,10 @@
-﻿using System;
+﻿using Assets.Scripts.Models;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
-using System.Linq;
-using System.Data;
-using Mono.Data.Sqlite;
-using Assets.Scripts.Models;
 
 public class MediaController : MonoBehaviour
 {
@@ -48,18 +45,18 @@ public class MediaController : MonoBehaviour
     public ToggleGroup manikinGroup;
 
     Sequence sequence;
-    int counter = 5;
+    int counter = 0;
 
-    bool isFading;
-
-    string connectionString;
+    string connString;
+    int userId;
 
     // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, true, "Welcome! Please observe and get familiar with the room and hit the \"Start Experiment\" button when you feel ready."));
 
-        connectionString = "URI=file:" + Application.dataPath + "/MT_Ruoyu.sqlite";
+        connString = "URI=file:" + Application.dataPath + "/MT_Ruoyu.sqlite";
+        userId = 1;
     }
 
     public void OnClickStartExperiment()
@@ -86,6 +83,7 @@ public class MediaController : MonoBehaviour
         if (selectedToggle)
         {
             Debug.Log("You chose: " + selectedToggle.name);
+            Result.InsertResult(connString, selectedToggle.name, userId, counter / 2);
 
             manikinGroup.SetAllTogglesOff();
 
