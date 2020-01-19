@@ -45,7 +45,9 @@ public class MediaController : MonoBehaviour
     public ToggleGroup manikinGroup;
 
     Sequence sequence;
-    int counter = 6;
+    int counter = 5;
+
+    bool isFading;
 
     // Start is called before the first frame update
     void Start()
@@ -77,13 +79,13 @@ public class MediaController : MonoBehaviour
 
     IEnumerator StartExperiment()
     {
-        //yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.5f);
 
-        //yield return StartCoroutine(PlayVideo());
-        //yield return StartCoroutine(Sleep(5)); // Duration of the Video: 60s
+        yield return StartCoroutine(PlayVideo());
+        yield return StartCoroutine(Sleep(5)); // Duration of the Video: 60s
 
-        //sequence = Sequence.Manikin;
-        //counter++;
+        sequence = Sequence.Manikin;
+        counter++;
         yield return StartCoroutine(Then());
     }
 
@@ -108,11 +110,7 @@ public class MediaController : MonoBehaviour
     IEnumerator Then()
     {
         Debug.Log(counter);
-        if (counter == 8 || counter == 7)
-        {
-            Debug.Log("11111: " + counter);
-        }
-
+        
         if (counter == 24) // A round of 4 elicitations is done
         {
             //todo
@@ -173,13 +171,10 @@ public class MediaController : MonoBehaviour
                 yield return StartCoroutine(Sleep(5)); // 30s display time
 
                 yield return StartCoroutine(ScreenSetups());
-                if (counter == 7)
-                {
-                    Debug.Log("22222: " + counter);
-                }
+                
                 sequence = Sequence.Manikin;
                 counter++;
-                yield return StartCoroutine(Then());
+                Then();
                 break;
             case 2:
                 yield return StartCoroutine(PlayAudio());
@@ -189,7 +184,7 @@ public class MediaController : MonoBehaviour
 
                 sequence = Sequence.Manikin;
                 counter++;
-                yield return StartCoroutine(Then());
+                Then();
                 break;
             case 3:
                 break;
@@ -215,7 +210,6 @@ public class MediaController : MonoBehaviour
         videoPlayer.SetTargetAudioSource(0, audioSource);
 
         videoPlayer.Play();
-
     }
 
     IEnumerator PlayImage()
