@@ -4,9 +4,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
+using System.Linq;
 
 public class MediaController : MonoBehaviour
 {
+    enum Sequence
+    {
+        Task,
+        Rest,
+        Image,
+        Audio,
+        Self,
+        Manikin
+    }
+
     public VideoClip videoClip;
     private VideoPlayer videoPlayer;
     public Renderer videoScreen;
@@ -18,37 +29,46 @@ public class MediaController : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip audioClip;
 
-    public Image vs1;
-    public Image vs2;
-    public Image vs3;
-    public Image vs4;
-    public Image vs5;
-    public Image vs6;
-    public Image vs7;
-    public Image vs8;
-    public Image vs9;
+    public Button buttonStartExperiment;
+    public Text topText;
 
-    public Button ButtonStartExperiment;
-    public Text TopText;
+    public Toggle m1;
+    public Toggle m2;
+    public Toggle m3;
+    public Toggle m4;
+    public Toggle m5;
+    public Toggle m6;
+    public Toggle m7;
+    public Toggle m8;
+    public Toggle m9;
+    public Button buttonSubmitManikin;
+    public ToggleGroup manikinGroup;
+
+    Sequence sequence;
+    int counter = 6;
 
     // Start is called before the first frame update
-    //void Start()
-    //{
-    //    //var connectionString = "Data Source=(localdb)/MSSQLLocalDB;Initial Catalog=masterthesis;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+    void Start()
+    {
+        StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, true, "Welcome! Please observe and get familiar with the room and hit the \"Start Experiment\" button when you feel ready."));
 
-    //    //var conn = new SqlConnection(connectionString);
+        //Debug.Log("Selected manikin: " + currentSelection.name);
 
-    //    //try
-    //    //{
-    //    //    conn.Open();
+        //var connectionString = "Data Source=(localdb)/MSSQLLocalDB;Initial Catalog=masterthesis;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
-    //    //    Debug.Log(conn.State);
-    //    //}
-    //    //catch (Exception e)
-    //    //{
-    //    //    Debug.Log(e);
-    //    //}
-    //}
+        //var conn = new SqlConnection(connectionString);
+
+        //try
+        //{
+        //    conn.Open();
+
+        //    Debug.Log(conn.State);
+        //}
+        //catch (Exception e)
+        //{
+        //    Debug.Log(e);
+        //}
+    }
 
     public void OnClickStartExperiment()
     {
@@ -57,31 +77,125 @@ public class MediaController : MonoBehaviour
 
     IEnumerator StartExperiment()
     {
-        yield return new WaitForSeconds(.5f);
+        //yield return new WaitForSeconds(.5f);
 
-        yield return StartCoroutine(PlayVideo());
-        yield return StartCoroutine(Sleep(60)); // Duration of the Video: 60s
-        yield return StartCoroutine(Sleep(30)); // 30s break
+        //yield return StartCoroutine(PlayVideo());
+        //yield return StartCoroutine(Sleep(5)); // Duration of the Video: 60s
 
-        yield return StartCoroutine(ShowManikin());
-        yield return StartCoroutine(Sleep(30)); // 30s display time
-        yield return StartCoroutine(Sleep(30)); // 30s break
+        //sequence = Sequence.Manikin;
+        //counter++;
+        yield return StartCoroutine(Then());
+    }
 
-        yield return StartCoroutine(PlayImage());
-        yield return StartCoroutine(Sleep(30)); // 30s display time
-        yield return StartCoroutine(Sleep(30)); // 30s break
+    public void OnClickButtonSubmitManikin()
+    {
+        var selectedToggle = manikinGroup.ActiveToggles().FirstOrDefault();
 
-        yield return StartCoroutine(ShowManikin());
-        yield return StartCoroutine(Sleep(30)); // 30s display time
-        yield return StartCoroutine(Sleep(30)); // 30s break
+        if (selectedToggle)
+        {
+            Debug.Log("You chose: " + selectedToggle.name);
 
-        yield return StartCoroutine(PlayAudio());
-        yield return StartCoroutine(Sleep(187)); // Duration of the Audio: 187s
-        yield return StartCoroutine(Sleep(30)); // 30s break
+            manikinGroup.SetAllTogglesOff();
 
-        yield return StartCoroutine(ShowManikin());
-        yield return StartCoroutine(Sleep(30)); // 30s display time
-        yield return StartCoroutine(Sleep(30)); // 30s break
+            StartCoroutine(Then());
+        }
+        else
+        {
+            StartCoroutine(ScreenSetups(false, false, true, true, true, true, true, true, true, true, true, true, false, "Please make sure you have selected one of the choices."));
+        }
+    }
+
+    IEnumerator Then()
+    {
+        Debug.Log(counter);
+        if (counter == 8 || counter == 7)
+        {
+            Debug.Log("11111: " + counter);
+        }
+
+        if (counter == 24) // A round of 4 elicitations is done
+        {
+            //todo
+        }
+        if (counter % 6 == 0 && counter != 0)
+        {
+            yield return StartCoroutine(ToNext());
+        }
+
+        switch (sequence)
+        {
+            case Sequence.Task:
+                break;
+            case Sequence.Rest:
+                StartCoroutine(ToRest());
+                break;
+            case Sequence.Image:
+                break;
+            case Sequence.Audio:
+                break;
+            case Sequence.Self:
+                break;
+            case Sequence.Manikin:
+                StartCoroutine(ToManikin());
+                break;
+            default:
+                break;
+        }
+
+        yield return null;
+    }
+
+    IEnumerator ToRest()
+    {
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, false, "Please take a rest until our next question."));
+
+        yield return StartCoroutine(Sleep(5)); // 30s break
+        sequence = Sequence.Manikin;
+        counter++;
+
+        yield return StartCoroutine(Then());
+    }
+
+    IEnumerator ToManikin()
+    {
+        sequence = Sequence.Rest;
+        counter++;
+
+        yield return StartCoroutine(ScreenSetups(false, false, true, true, true, true, true, true, true, true, true, true, false, "Please evaluate your current emotions, with bigger size you choose indicating stronger emotion. To proceed further, please click \"Subimit my Selection\" button after fulfilling the form."));
+    }
+
+    IEnumerator ToNext()
+    {
+        switch (counter / 6)
+        {
+            case 1:
+                yield return StartCoroutine(PlayImage());
+                yield return StartCoroutine(Sleep(5)); // 30s display time
+
+                yield return StartCoroutine(ScreenSetups());
+                if (counter == 7)
+                {
+                    Debug.Log("22222: " + counter);
+                }
+                sequence = Sequence.Manikin;
+                counter++;
+                yield return StartCoroutine(Then());
+                break;
+            case 2:
+                yield return StartCoroutine(PlayAudio());
+                yield return StartCoroutine(Sleep(5)); // Duration of the Audio: 187s
+
+                yield return StartCoroutine(ScreenSetups());
+
+                sequence = Sequence.Manikin;
+                counter++;
+                yield return StartCoroutine(Then());
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
     }
 
     IEnumerator PlayVideo()
@@ -102,7 +216,6 @@ public class MediaController : MonoBehaviour
 
         videoPlayer.Play();
 
-        yield return null;
     }
 
     IEnumerator PlayImage()
@@ -122,32 +235,26 @@ public class MediaController : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator ShowManikin()
-    {
-        yield return StartCoroutine(ScreenSetups(false, false, true, true, true, true, true, true, true, true, true));
-
-        yield return null;
-    }
-
-    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool vs1On = false, bool vs2On = false, bool vs3On = false, bool vs4On = false, bool vs5On = false, bool vs6On = false, bool vs7On = false, bool vs8On = false, bool vs9On = false, bool buttonStartExperimentOn = false, string topText = "")
+    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool m1On = false, bool m2On = false, bool m3On = false, bool m4On = false, bool m5On = false, bool m6On = false, bool m7On = false, bool m8On = false, bool m9On = false, bool buttonSubmitManikinOn = false, bool buttonStartExperimentOn = false, string topText = "")
     {
         if (videoPlayer != null) videoPlayer.Stop();
         if (audioSource != null) audioSource.Stop();
         videoScreen.enabled = videoScreenOn;
         imageScreen.enabled = imageScreenOn;
 
-        vs1.enabled = vs1On;
-        vs2.enabled = vs2On;
-        vs3.enabled = vs3On;
-        vs4.enabled = vs4On;
-        vs5.enabled = vs5On;
-        vs6.enabled = vs6On;
-        vs7.enabled = vs7On;
-        vs8.enabled = vs8On;
-        vs9.enabled = vs9On;
+        m1.gameObject.SetActive(m1On);
+        m2.gameObject.SetActive(m2On);
+        m3.gameObject.SetActive(m3On);
+        m4.gameObject.SetActive(m4On);
+        m5.gameObject.SetActive(m5On);
+        m6.gameObject.SetActive(m6On);
+        m7.gameObject.SetActive(m7On);
+        m8.gameObject.SetActive(m8On);
+        m9.gameObject.SetActive(m9On);
+        buttonSubmitManikin.gameObject.SetActive(buttonSubmitManikinOn);
 
-        ButtonStartExperiment.gameObject.SetActive(buttonStartExperimentOn);
-        TopText.text = topText;
+        buttonStartExperiment.gameObject.SetActive(buttonStartExperimentOn);
+        this.topText.text = topText;
 
         yield return null;
     }
@@ -160,55 +267,10 @@ public class MediaController : MonoBehaviour
         {
             //Increment Timer until counter >= waitTime
             counter += Time.deltaTime;
-            Debug.Log("You still have: " + Convert.ToString(timeToWait - counter) + " seconds");
+            //Debug.Log("You still have: " + Convert.ToString(timeToWait - counter) + " seconds");
 
             //Wait for a frame so that Unity doesn't freeze
             yield return null;
         }
-    }
-
-    public void OnClickVS1()
-    {
-        Debug.Log("asdasdad");
-    }
-
-    public void OnClickVS2()
-    {
-        Debug.Log("asdasdad");
-    }
-
-    public void OnClickVS3()
-    {
-        Debug.Log("asdasdad");
-    }
-
-    public void OnClickVS4()
-    {
-        Debug.Log("asdasdad");
-    }
-
-    public void OnClickVS5()
-    {
-        Debug.Log("asdasdad");
-    }
-
-    public void OnClickVS6()
-    {
-        Debug.Log("asdasdad");
-    }
-
-    public void OnClickVS7()
-    {
-        Debug.Log("asdasdad");
-    }
-
-    public void OnClickVS8()
-    {
-        Debug.Log("asdasdad");
-    }
-
-    public void OnClickVS9()
-    {
-        Debug.Log("asdasdad");
     }
 }
