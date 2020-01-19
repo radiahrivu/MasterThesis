@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
 using System.Linq;
+using System.Data;
+using Mono.Data.Sqlite;
+using Assets.Scripts.Models;
 
 public class MediaController : MonoBehaviour
 {
@@ -49,27 +52,14 @@ public class MediaController : MonoBehaviour
 
     bool isFading;
 
+    string connectionString;
+
     // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, true, "Welcome! Please observe and get familiar with the room and hit the \"Start Experiment\" button when you feel ready."));
 
-        //Debug.Log("Selected manikin: " + currentSelection.name);
-
-        //var connectionString = "Data Source=(localdb)/MSSQLLocalDB;Initial Catalog=masterthesis;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-
-        //var conn = new SqlConnection(connectionString);
-
-        //try
-        //{
-        //    conn.Open();
-
-        //    Debug.Log(conn.State);
-        //}
-        //catch (Exception e)
-        //{
-        //    Debug.Log(e);
-        //}
+        connectionString = "URI=file:" + Application.dataPath + "/MT_Ruoyu.sqlite";
     }
 
     public void OnClickStartExperiment()
@@ -110,7 +100,7 @@ public class MediaController : MonoBehaviour
     IEnumerator Then()
     {
         Debug.Log(counter);
-        
+
         if (counter == 24) // A round of 4 elicitations is done
         {
             //todo
@@ -171,7 +161,7 @@ public class MediaController : MonoBehaviour
                 yield return StartCoroutine(Sleep(5)); // 30s display time
 
                 yield return StartCoroutine(ScreenSetups());
-                
+
                 sequence = Sequence.Manikin;
                 counter++;
                 Then();

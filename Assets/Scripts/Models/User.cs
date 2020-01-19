@@ -7,11 +7,15 @@ using System.Data;
 using Mono.Data.Sqlite;
 using UnityEngine;
 
-namespace Assets.Scripts
+namespace Assets.Scripts.Models
 {
-    public class DatabaseController
+    class User
     {
-        public static void DatabaseSetup(string connString)
+        public int UserId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+
+        public static List<User> GetAllUsers(string connString)
         {
             try
             {
@@ -25,13 +29,21 @@ namespace Assets.Scripts
 
                         using (IDataReader reader = cmd.ExecuteReader())
                         {
+                            var users = new List<User>();
+
                             while (reader.Read())
                             {
-                                Debug.Log("First Name: " + reader.GetString(1));
-                                Debug.Log("Last Name: " + reader.GetString(2));
+                                var user = new User
+                                {
+                                    UserId = reader.GetInt32(0),
+                                    FirstName = reader.GetString(1),
+                                    LastName = reader.GetString(2)
+                                };
+                                users.Add(user);
                             }
                             dbConnection.Close();
                             reader.Close();
+                            return users;
                         }
                     }
                 }
@@ -39,6 +51,7 @@ namespace Assets.Scripts
             catch (Exception e)
             {
                 Debug.Log(e);
+                return null;
             }
         }
     }
