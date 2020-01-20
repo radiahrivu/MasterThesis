@@ -57,6 +57,9 @@ public class MediaController : MonoBehaviour
 
         connString = "URI=file:" + Application.dataPath + "/MT_Ruoyu.sqlite";
         userId = 1;
+
+        //StartCoroutine(Sleep(5));
+        //StartCoroutine(StartExperiment());
     }
 
     public void OnClickStartExperiment()
