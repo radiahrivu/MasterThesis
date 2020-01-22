@@ -34,8 +34,6 @@ public class ButtonTransitioner : MonoBehaviour, IPointerEnterHandler, IPointerE
     public void OnPointerDown(PointerEventData eventData)
     {
         print("Down");
-
-        m_Image.color = m_DownColor;
     }
 
     public void OnPointerUp(PointerEventData eventData)
@@ -47,6 +45,6 @@ public class ButtonTransitioner : MonoBehaviour, IPointerEnterHandler, IPointerE
     {
         print("Click");
 
-        m_Image.color = m_HoverColor;
+        m_Image.color = m_DownColor;
     }
 }
