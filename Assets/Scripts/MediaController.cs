@@ -19,10 +19,25 @@ public class MediaController : MonoBehaviour
         Manikin
     }
 
+    enum Emotion
+    {
+        Sad,
+        Anger,
+        Happy,
+        Exciting
+    }
+
+    enum Method
+    {
+        Video,
+        AbR,
+        Image,
+        Audio
+    }
+
     int[,] sequence = new int[,] { { 0, 1, 2, 3 }, { 0, 1, 3, 2 }, { 0, 2, 1, 3 }, { 0, 2, 3, 1 }, { 0, 3, 1, 2 }, { 0, 3, 2, 1 }, { 1, 0, 2, 3 }, { 1, 0, 3, 2 }, { 1, 2, 0, 3 }, { 1, 2, 3, 0 }, { 1, 3, 0, 2 }, { 1, 3, 2, 0 }, { 2, 0, 1, 3 }, { 2, 0, 3, 1 }, { 2, 1, 0, 3 }, { 2, 1, 3, 0 }, { 2, 3, 1, 0 }, { 2, 3, 0, 1 }, { 3, 0, 1, 2 }, { 3, 0, 2, 1 }, { 3, 1, 0, 2 }, { 3, 1, 2, 0 }, { 3, 2, 0, 1 }, { 3, 2, 1, 0 } };
 
     int[,] pilotSequence = new int[,] { { 0, 1 }, { 1, 0 } };
-    int sequenceNumber = -1;
 
     public VideoClip videoClip;
     private VideoPlayer videoPlayer;
@@ -38,43 +53,71 @@ public class MediaController : MonoBehaviour
     public Button buttonStartExperiment;
     public Text topText;
 
-    public Toggle m1;
-    public Toggle m2;
-    public Toggle m3;
-    public Toggle m4;
-    public Toggle m5;
-    public Toggle m6;
-    public Toggle m7;
-    public Toggle m8;
-    public Toggle m9;
+    public Toggle a1;
+    public Toggle a2;
+    public Toggle a3;
+    public Toggle a4;
+    public Toggle a5;
+    public Toggle a6;
+    public Toggle a7;
+    public Toggle a8;
+    public Toggle a9;
+    public ToggleGroup arousalGroup;
+
+    public Toggle v1;
+    public Toggle v2;
+    public Toggle v3;
+    public Toggle v4;
+    public Toggle v5;
+    public Toggle v6;
+    public Toggle v7;
+    public Toggle v8;
+    public Toggle v9;
+    public ToggleGroup valenceGroup;
+
+    public Toggle d1;
+    public Toggle d2;
+    public Toggle d3;
+    public Toggle d4;
+    public Toggle d5;
+    public Toggle d6;
+    public Toggle d7;
+    public Toggle d8;
+    public Toggle d9;
+    public ToggleGroup dominanceGroup;
+
     public Button buttonSubmitManikin;
-    public ToggleGroup manikinGroup;
+
+    public Button buttonAbRNext;
 
     public GameObject avatar;
 
     NextStep nextStep;
     int counter = 0;
+    int methodCounter = 0;
 
     string connString;
     int userId;
 
+    ExperimentSetting setting;
+
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, true, "Welcome! Please observe and get familiar with the room and hit the \"Start Experiment\" button when you feel ready."));
+        StartCoroutine(ScreenSetups(false, false, false, true, "Welcome! Please observe and get familiar with the room and hit the \"Start Experiment\" button when you feel ready."));
 
         connString = "URI=file:" + Application.dataPath + "/MT_Ruoyu.sqlite";
 
         userId = 1;
 
-        System.Random random = new System.Random();
-        sequenceNumber = random.Next(0, 23);
+        setting = new ExperimentSetting();
+        _ = setting.GetExperimentSettingByUserId(connString, userId);
     }
 
     public void OnClickStartExperiment()
     {
         counter = 0;
-        StartCoroutine(StartExperiment(pilotSequence[sequenceNumber, 0]));
+        StartCoroutine(StartExperiment(pilotSequence[setting.Sequence, methodCounter]));
     }
 
     IEnumerator StartExperiment(int firstStep)
@@ -96,14 +139,17 @@ public class MediaController : MonoBehaviour
 
     public void OnClickButtonSubmitManikin()
     {
-        var selectedToggle = manikinGroup.ActiveToggles().FirstOrDefault();
+        var selectedToggleArousal = arousalGroup.ActiveToggles().FirstOrDefault();
+        var selectedToggleValence = valenceGroup.ActiveToggles().FirstOrDefault();
+        var selectedToggleDominance = dominanceGroup.ActiveToggles().FirstOrDefault();
 
-        if (selectedToggle)
+        if (selectedToggleArousal && selectedToggleValence && selectedToggleDominance)
         {
-            Debug.Log("You chose: " + selectedToggle.name);
-            Result.InsertResult(connString, selectedToggle.name, userId, counter / 2);
+            var result = new ExperimentResult(userId, setting.ID, pilotSequence[setting.Sequence, methodCounter], int.Parse(selectedToggleArousal.name), int.Parse(selectedToggleValence.name), int.Parse(selectedToggleDominance.name), counter);
 
-            manikinGroup.SetAllTogglesOff();
+            result.InsertResult(connString);
+
+            valenceGroup.SetAllTogglesOff();
 
             counter++;
 
@@ -111,8 +157,15 @@ public class MediaController : MonoBehaviour
         }
         else
         {
-            StartCoroutine(ScreenSetups(false, false, true, true, true, true, true, true, true, true, true, true, false, "Please make sure you have selected one of the choices."));
+            StartCoroutine(ScreenSetups(false, false, true, false, "Please make sure you have selected one of the choices."));
         }
+    }
+
+    public void OnClickButtonAbRNext()
+    {
+        counter++;
+
+        StartCoroutine(Then());
     }
 
     IEnumerator PlayVideo()
@@ -248,18 +301,21 @@ public class MediaController : MonoBehaviour
         switch (counter) // Reach end of each REST round, then entering into the next phase
         {
             case 5:
-                nextStep = (NextStep)pilotSequence[sequenceNumber, 1];
+                methodCounter++;
+                nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
                 StartCoroutine(Then());
                 break;
             case 11:
                 // Finish the pilot experiment
                 StartCoroutine(Finish());
 
-                //nextStep = (NextStep)pilotSequence[sequenceNumber, 2];
+                //methodCounter++;
+                //nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
                 //StartCoroutine(Then());
                 break;
             case 17:
-                nextStep = (NextStep)pilotSequence[sequenceNumber, 3];
+                methodCounter++;
+                nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
                 StartCoroutine(Then());
                 break;
             case 23:
@@ -270,7 +326,7 @@ public class MediaController : MonoBehaviour
                 break;
         }
 
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, false, "Please take a rest until our next question."));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please take a rest until our next question."));
 
         yield return StartCoroutine(Sleep(30)); // 30s break
         nextStep = NextStep.Manikin;
@@ -282,43 +338,71 @@ public class MediaController : MonoBehaviour
     {
         nextStep = NextStep.Rest;
 
-        yield return StartCoroutine(ScreenSetups(false, false, true, true, true, true, true, true, true, true, true, true, false, "Please evaluate your current emotions, with bigger size you choose indicating stronger emotion. To proceed further, please click \"Subimit my Selection\" button after fulfilling the form."));
+        yield return StartCoroutine(ScreenSetups(false, false, true, false, "Please evaluate your current emotions, with bigger size you choose indicating stronger emotion. To proceed further, please click \"Subimit my Selection\" button after fulfilling the form."));
     }
 
     IEnumerator ToAbR()
     {
-        nextStep = NextStep.AbR;
+        nextStep = NextStep.Rest;
 
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, false, "Please think of the " + ".", true));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feeling to the avatar next to you. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", true));
     }
 
     IEnumerator Finish()
     {
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, false, "Thank you for participating our experiment, now you may remove the VR headset and let the experimenter know it is all finished."));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Thank you for participating our experiment, now you may remove the VR headset and let the experimenter know it is all finished."));
     }
 
-    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool m1On = false, bool m2On = false, bool m3On = false, bool m4On = false, bool m5On = false, bool m6On = false, bool m7On = false, bool m8On = false, bool m9On = false, bool buttonSubmitManikinOn = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false)
+    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikin = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false)
     {
         if (videoPlayer != null) videoPlayer.Stop();
         if (audioSource != null) audioSource.Stop();
         videoScreen.enabled = videoScreenOn;
         imageScreen.enabled = imageScreenOn;
 
-        m1.gameObject.SetActive(m1On);
-        m2.gameObject.SetActive(m2On);
-        m3.gameObject.SetActive(m3On);
-        m4.gameObject.SetActive(m4On);
-        m5.gameObject.SetActive(m5On);
-        m6.gameObject.SetActive(m6On);
-        m7.gameObject.SetActive(m7On);
-        m8.gameObject.SetActive(m8On);
-        m9.gameObject.SetActive(m9On);
-        buttonSubmitManikin.gameObject.SetActive(buttonSubmitManikinOn);
+        ManikinSetups(manikin);
 
         buttonStartExperiment.gameObject.SetActive(buttonStartExperimentOn);
         this.topText.text = topText;
 
         this.avatar.SetActive(avatar);
+
+        yield return null;
+    }
+
+    IEnumerator ManikinSetups(bool manikin)
+    {
+        a1.gameObject.SetActive(manikin);
+        a2.gameObject.SetActive(manikin);
+        a3.gameObject.SetActive(manikin);
+        a4.gameObject.SetActive(manikin);
+        a5.gameObject.SetActive(manikin);
+        a6.gameObject.SetActive(manikin);
+        a7.gameObject.SetActive(manikin);
+        a8.gameObject.SetActive(manikin);
+        a9.gameObject.SetActive(manikin);
+
+        v1.gameObject.SetActive(manikin);
+        v2.gameObject.SetActive(manikin);
+        v3.gameObject.SetActive(manikin);
+        v4.gameObject.SetActive(manikin);
+        v5.gameObject.SetActive(manikin);
+        v6.gameObject.SetActive(manikin);
+        v7.gameObject.SetActive(manikin);
+        v8.gameObject.SetActive(manikin);
+        v9.gameObject.SetActive(manikin);
+
+        d1.gameObject.SetActive(manikin);
+        d2.gameObject.SetActive(manikin);
+        d3.gameObject.SetActive(manikin);
+        d4.gameObject.SetActive(manikin);
+        d5.gameObject.SetActive(manikin);
+        d6.gameObject.SetActive(manikin);
+        d7.gameObject.SetActive(manikin);
+        d8.gameObject.SetActive(manikin);
+        d9.gameObject.SetActive(manikin);
+
+        buttonSubmitManikin.gameObject.SetActive(manikin);
 
         yield return null;
     }
