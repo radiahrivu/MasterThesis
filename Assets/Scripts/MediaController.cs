@@ -8,15 +8,21 @@ using UnityEngine.Video;
 
 public class MediaController : MonoBehaviour
 {
-    enum Sequence
+    enum NextStep
     {
-        Task,
-        Rest,
+        Video,
+        AbR,
         Image,
         Audio,
-        Self,
+        Task,
+        Rest,
         Manikin
     }
+
+    int[,] sequence = new int[,] { { 0, 1, 2, 3 }, { 0, 1, 3, 2 }, { 0, 2, 1, 3 }, { 0, 2, 3, 1 }, { 0, 3, 1, 2 }, { 0, 3, 2, 1 }, { 1, 0, 2, 3 }, { 1, 0, 3, 2 }, { 1, 2, 0, 3 }, { 1, 2, 3, 0 }, { 1, 3, 0, 2 }, { 1, 3, 2, 0 }, { 2, 0, 1, 3 }, { 2, 0, 3, 1 }, { 2, 1, 0, 3 }, { 2, 1, 3, 0 }, { 2, 3, 1, 0 }, { 2, 3, 0, 1 }, { 3, 0, 1, 2 }, { 3, 0, 2, 1 }, { 3, 1, 0, 2 }, { 3, 1, 2, 0 }, { 3, 2, 0, 1 }, { 3, 2, 1, 0 } };
+
+    int[,] pilotSequence = new int[,] { { 0, 1 }, { 1, 0 } };
+    int sequenceNumber = -1;
 
     public VideoClip videoClip;
     private VideoPlayer videoPlayer;
@@ -44,7 +50,9 @@ public class MediaController : MonoBehaviour
     public Button buttonSubmitManikin;
     public ToggleGroup manikinGroup;
 
-    Sequence sequence;
+    public GameObject avatar;
+
+    NextStep nextStep;
     int counter = 0;
 
     string connString;
@@ -56,26 +64,33 @@ public class MediaController : MonoBehaviour
         StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, true, "Welcome! Please observe and get familiar with the room and hit the \"Start Experiment\" button when you feel ready."));
 
         connString = "URI=file:" + Application.dataPath + "/MT_Ruoyu.sqlite";
+
         userId = 1;
 
-        //StartCoroutine(Sleep(5));
-        //StartCoroutine(StartExperiment());
+        System.Random random = new System.Random();
+        sequenceNumber = random.Next(0, 23);
     }
 
     public void OnClickStartExperiment()
     {
-        StartCoroutine(StartExperiment());
+        counter = 0;
+        StartCoroutine(StartExperiment(pilotSequence[sequenceNumber, 0]));
     }
 
-    IEnumerator StartExperiment()
+    IEnumerator StartExperiment(int firstStep)
     {
-        yield return new WaitForSeconds(.5f);
+        nextStep = (NextStep)firstStep;
 
-        yield return StartCoroutine(PlayVideo());
-        yield return StartCoroutine(Sleep(5)); // Duration of the Video: 60s
+        //yield return new WaitForSeconds(.5f);
+        StartCoroutine(Then());
 
-        sequence = Sequence.Manikin;
-        counter++;
+        //yield return StartCoroutine(PlayVideo());
+        //yield return StartCoroutine(Sleep(5)); // Duration of the Video: 60s
+
+        //nextStep = NextStep.Manikin;
+        //counter++;
+
+        nextStep = NextStep.Manikin;
         yield return StartCoroutine(Then());
     }
 
@@ -90,97 +105,13 @@ public class MediaController : MonoBehaviour
 
             manikinGroup.SetAllTogglesOff();
 
+            counter++;
+
             StartCoroutine(Then());
         }
         else
         {
             StartCoroutine(ScreenSetups(false, false, true, true, true, true, true, true, true, true, true, true, false, "Please make sure you have selected one of the choices."));
-        }
-    }
-
-    IEnumerator Then()
-    {
-        Debug.Log(counter);
-
-        if (counter == 24) // A round of 4 elicitations is done
-        {
-            //todo
-        }
-        if (counter % 6 == 0 && counter != 0)
-        {
-            yield return StartCoroutine(ToNext());
-        }
-
-        switch (sequence)
-        {
-            case Sequence.Task:
-                break;
-            case Sequence.Rest:
-                StartCoroutine(ToRest());
-                break;
-            case Sequence.Image:
-                break;
-            case Sequence.Audio:
-                break;
-            case Sequence.Self:
-                break;
-            case Sequence.Manikin:
-                StartCoroutine(ToManikin());
-                break;
-            default:
-                break;
-        }
-
-        yield return null;
-    }
-
-    IEnumerator ToRest()
-    {
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, false, "Please take a rest until our next question."));
-
-        yield return StartCoroutine(Sleep(5)); // 30s break
-        sequence = Sequence.Manikin;
-        counter++;
-
-        yield return StartCoroutine(Then());
-    }
-
-    IEnumerator ToManikin()
-    {
-        sequence = Sequence.Rest;
-        counter++;
-
-        yield return StartCoroutine(ScreenSetups(false, false, true, true, true, true, true, true, true, true, true, true, false, "Please evaluate your current emotions, with bigger size you choose indicating stronger emotion. To proceed further, please click \"Subimit my Selection\" button after fulfilling the form."));
-    }
-
-    IEnumerator ToNext()
-    {
-        switch (counter / 6)
-        {
-            case 1:
-                yield return StartCoroutine(PlayImage());
-                yield return StartCoroutine(Sleep(5)); // 30s display time
-
-                yield return StartCoroutine(ScreenSetups());
-
-                sequence = Sequence.Manikin;
-                counter++;
-                Then();
-                break;
-            case 2:
-                yield return StartCoroutine(PlayAudio());
-                yield return StartCoroutine(Sleep(5)); // Duration of the Audio: 187s
-
-                yield return StartCoroutine(ScreenSetups());
-
-                sequence = Sequence.Manikin;
-                counter++;
-                Then();
-                break;
-            case 3:
-                break;
-            default:
-                break;
         }
     }
 
@@ -201,11 +132,15 @@ public class MediaController : MonoBehaviour
         videoPlayer.SetTargetAudioSource(0, audioSource);
 
         videoPlayer.Play();
+
+        counter++;
     }
 
     IEnumerator PlayImage()
     {
         yield return StartCoroutine(ScreenSetups(false, true));
+
+        counter++;
 
         yield return null;
     }
@@ -217,10 +152,152 @@ public class MediaController : MonoBehaviour
         audioSource.clip = audioClip;
         audioSource.Play(0);
 
+        counter++;
+
         yield return null;
     }
 
-    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool m1On = false, bool m2On = false, bool m3On = false, bool m4On = false, bool m5On = false, bool m6On = false, bool m7On = false, bool m8On = false, bool m9On = false, bool buttonSubmitManikinOn = false, bool buttonStartExperimentOn = false, string topText = "")
+    IEnumerator Then()
+    {
+        Debug.Log(counter);
+
+        if (counter == 24) // A round of 4 elicitations is done
+        {
+            //todo
+        }
+        //if (counter % 6 == 0 && counter != 0)
+        //{
+        //    yield return StartCoroutine(ToNext());
+        //}
+
+        switch (nextStep)
+        {
+            case NextStep.Video:
+                StartCoroutine(PlayVideo());
+                StartCoroutine(Sleep(5)); // Duration of the Video: 60s
+                break;
+            case NextStep.Task:
+                break;
+            case NextStep.Rest:
+                StartCoroutine(ToRest());
+                break;
+            case NextStep.Image:
+                yield return StartCoroutine(PlayImage());
+                yield return StartCoroutine(Sleep(60)); // 60s display time
+
+                yield return StartCoroutine(ScreenSetups());
+
+                nextStep = NextStep.Manikin;
+                Then();
+                break;
+            case NextStep.Audio:
+                yield return StartCoroutine(PlayAudio());
+                yield return StartCoroutine(Sleep(187)); // Duration of the Audio: 187s
+
+                yield return StartCoroutine(ScreenSetups());
+
+                nextStep = NextStep.Manikin;
+                Then();
+                break;
+            case NextStep.AbR:
+                StartCoroutine(ToAbR());
+                break;
+            case NextStep.Manikin:
+                StartCoroutine(ToManikin());
+                break;
+            default:
+                break;
+        }
+
+        yield return null;
+    }
+
+    //IEnumerator ToNext()
+    //{
+    //    switch (counter / 6)
+    //    {
+    //        case 1:
+    //            yield return StartCoroutine(PlayImage());
+    //            yield return StartCoroutine(Sleep(5)); // 30s display time
+
+    //            yield return StartCoroutine(ScreenSetups());
+
+    //            nextStep = NextStep.Manikin;
+    //            counter++;
+    //            Then();
+    //            break;
+    //        case 2:
+    //            yield return StartCoroutine(PlayAudio());
+    //            yield return StartCoroutine(Sleep(5)); // Duration of the Audio: 187s
+
+    //            yield return StartCoroutine(ScreenSetups());
+
+    //            nextStep = NextStep.Manikin;
+    //            counter++;
+    //            Then();
+    //            break;
+    //        case 3:
+    //            break;
+    //        default:
+    //            break;
+    //    }
+    //}
+
+    IEnumerator ToRest()
+    {
+        switch (counter) // Reach end of each REST round, then entering into the next phase
+        {
+            case 5:
+                nextStep = (NextStep)pilotSequence[sequenceNumber, 1];
+                StartCoroutine(Then());
+                break;
+            case 11:
+                // Finish the pilot experiment
+                StartCoroutine(Finish());
+
+                //nextStep = (NextStep)pilotSequence[sequenceNumber, 2];
+                //StartCoroutine(Then());
+                break;
+            case 17:
+                nextStep = (NextStep)pilotSequence[sequenceNumber, 3];
+                StartCoroutine(Then());
+                break;
+            case 23:
+                // Finish the experiment
+                StartCoroutine(Finish());
+                break;
+            default:
+                break;
+        }
+
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, false, "Please take a rest until our next question."));
+
+        yield return StartCoroutine(Sleep(30)); // 30s break
+        nextStep = NextStep.Manikin;
+
+        yield return StartCoroutine(Then());
+    }
+
+    IEnumerator ToManikin()
+    {
+        nextStep = NextStep.Rest;
+
+        yield return StartCoroutine(ScreenSetups(false, false, true, true, true, true, true, true, true, true, true, true, false, "Please evaluate your current emotions, with bigger size you choose indicating stronger emotion. To proceed further, please click \"Subimit my Selection\" button after fulfilling the form."));
+    }
+
+    IEnumerator ToAbR()
+    {
+        nextStep = NextStep.AbR;
+
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, false, "Please think of the " + ".", true));
+    }
+
+    IEnumerator Finish()
+    {
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, false, false, false, false, false, false, false, false, false, "Thank you for participating our experiment, now you may remove the VR headset and let the experimenter know it is all finished."));
+    }
+
+    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool m1On = false, bool m2On = false, bool m3On = false, bool m4On = false, bool m5On = false, bool m6On = false, bool m7On = false, bool m8On = false, bool m9On = false, bool buttonSubmitManikinOn = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false)
     {
         if (videoPlayer != null) videoPlayer.Stop();
         if (audioSource != null) audioSource.Stop();
@@ -240,6 +317,8 @@ public class MediaController : MonoBehaviour
 
         buttonStartExperiment.gameObject.SetActive(buttonStartExperimentOn);
         this.topText.text = topText;
+
+        this.avatar.SetActive(avatar);
 
         yield return null;
     }
