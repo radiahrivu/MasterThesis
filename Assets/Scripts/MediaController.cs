@@ -35,12 +35,22 @@ public class MediaController : MonoBehaviour
         Audio
     }
 
+    // 0 = Video, 1 = AbR, 2 = Image, 3 = Audio
     int[,] sequence = new int[,] { { 0, 1, 2, 3 }, { 0, 1, 3, 2 }, { 0, 2, 1, 3 }, { 0, 2, 3, 1 }, { 0, 3, 1, 2 }, { 0, 3, 2, 1 }, { 1, 0, 2, 3 }, { 1, 0, 3, 2 }, { 1, 2, 0, 3 }, { 1, 2, 3, 0 }, { 1, 3, 0, 2 }, { 1, 3, 2, 0 }, { 2, 0, 1, 3 }, { 2, 0, 3, 1 }, { 2, 1, 0, 3 }, { 2, 1, 3, 0 }, { 2, 3, 1, 0 }, { 2, 3, 0, 1 }, { 3, 0, 1, 2 }, { 3, 0, 2, 1 }, { 3, 1, 0, 2 }, { 3, 1, 2, 0 }, { 3, 2, 0, 1 }, { 3, 2, 1, 0 } };
 
     int[,] pilotSequence = new int[,] { { 0, 1 }, { 1, 0 } };
 
     public VideoClip videoClipHappy1;
     public VideoClip videoClipHappy2;
+
+    public VideoClip videoClipAngry1;
+    public VideoClip videoClipAngry2;
+
+    public VideoClip videoClipExciting1;
+    public VideoClip videoClipExciting2;
+
+    public VideoClip videoClipSad1;
+    public VideoClip videoClipSad2;
 
     private VideoPlayer videoPlayer;
     public Renderer videoScreen;
@@ -113,12 +123,13 @@ public class MediaController : MonoBehaviour
         userId = 1;
 
         setting = new ExperimentSetting();
-        _ = setting.GetExperimentSettingByUserId(connString, userId);
+        setting = setting.GetExperimentSettingByUserId(connString, userId);
     }
 
     public void OnClickStartExperiment()
     {
         counter = 0;
+
         StartCoroutine(StartExperiment(pilotSequence[setting.Sequence, methodCounter]));
     }
 
@@ -127,15 +138,13 @@ public class MediaController : MonoBehaviour
         nextStep = (NextStep)firstStep;
 
         //yield return new WaitForSeconds(.5f);
-        StartCoroutine(Then());
+        //StartCoroutine(Then());
 
         //yield return StartCoroutine(PlayVideo());
         //yield return StartCoroutine(Sleep(5)); // Duration of the Video: 60s
 
         //nextStep = NextStep.Manikin;
         //counter++;
-
-        nextStep = NextStep.Manikin;
         yield return StartCoroutine(Then());
     }
 
@@ -147,7 +156,30 @@ public class MediaController : MonoBehaviour
 
         if (selectedToggleArousal && selectedToggleValence && selectedToggleDominance)
         {
+
+            Debug.Log(selectedToggleArousal.name);
+            Debug.Log(selectedToggleValence.name);
+            Debug.Log(selectedToggleDominance.name);
+
             var result = new ExperimentResult(userId, setting.ID, pilotSequence[setting.Sequence, methodCounter], int.Parse(selectedToggleArousal.name), int.Parse(selectedToggleValence.name), int.Parse(selectedToggleDominance.name), counter);
+
+            switch ((Method)pilotSequence[setting.Sequence, methodCounter])
+            {
+                case Method.Video:
+                    result.Clip = setting.VideoClip;
+                    break;
+                case Method.Audio:
+                    result.Clip = setting.AudioClip;
+                    break;
+                case Method.AbR:
+                    result.Clip = 0;
+                    break;
+                case Method.Image:
+                    result.Clip = setting.ImageClip;
+                    break;
+                default:
+                    break;
+            }
 
             result.InsertResult(connString);
 
@@ -159,7 +191,7 @@ public class MediaController : MonoBehaviour
         }
         else
         {
-            StartCoroutine(ScreenSetups(false, false, true, false, "Please make sure you have selected one of the choices."));
+            StartCoroutine(ScreenSetups(false, false, true, false, "Please make sure you have selected one of the 9 choices per row and all 3 rows."));
         }
     }
 
@@ -178,8 +210,53 @@ public class MediaController : MonoBehaviour
         var audioSource = gameObject.AddComponent<AudioSource>();
 
         videoPlayer.playOnAwake = false;
-        //videoPlayer.clip = videoClipHappy1;
-        videoPlayer.clip = videoClipHappy2;
+
+        switch ((Emotion)setting.Emotion)
+        {
+            case Emotion.Anger:
+                if (setting.VideoClip == 1)
+                {
+                    videoPlayer.clip = videoClipAngry1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    videoPlayer.clip = videoClipAngry2;
+                }
+                break;
+            case Emotion.Exciting:
+                if (setting.VideoClip == 1)
+                {
+                    videoPlayer.clip = videoClipExciting1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    videoPlayer.clip = videoClipExciting2;
+                }
+                break;
+            case Emotion.Happy:
+                if (setting.VideoClip == 1)
+                {
+                    videoPlayer.clip = videoClipHappy1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    videoPlayer.clip = videoClipHappy2;
+                }
+                break;
+            case Emotion.Sad:
+                if (setting.VideoClip == 1)
+                {
+                    videoPlayer.clip = videoClipSad1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    videoPlayer.clip = videoClipSad2;
+                }
+                break;
+            default:
+                break;
+        }
+
         videoPlayer.renderMode = VideoRenderMode.RenderTexture;
         videoPlayer.targetTexture = videoMaterialTexture;
         videoPlayer.targetMaterialRenderer = videoScreen;
@@ -190,6 +267,57 @@ public class MediaController : MonoBehaviour
         videoPlayer.Play();
 
         counter++;
+
+        switch ((Emotion)setting.Emotion)
+        {
+            case Emotion.Anger:
+                if (setting.VideoClip == 1)
+                {
+                    yield return StartCoroutine(Sleep(183));
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    yield return StartCoroutine(Sleep(224));
+                }
+                break;
+            case Emotion.Exciting:
+                if (setting.VideoClip == 1)
+                {
+                    yield return StartCoroutine(Sleep(5));
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    yield return StartCoroutine(Sleep(5));
+                }
+                break;
+            case Emotion.Happy:
+                if (setting.VideoClip == 1)
+                {
+                    yield return StartCoroutine(Sleep(221));
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    yield return StartCoroutine(Sleep(248));
+                }
+                break;
+            case Emotion.Sad:
+                if (setting.VideoClip == 1)
+                {
+                    yield return StartCoroutine(Sleep(5));
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    yield return StartCoroutine(Sleep(5));
+                }
+                break;
+            default:
+                break;
+        }
+
+        yield return StartCoroutine(ScreenSetups());
+
+        nextStep = NextStep.Manikin;
+        yield return StartCoroutine(Then());
     }
 
     IEnumerator PlayImage()
@@ -217,20 +345,12 @@ public class MediaController : MonoBehaviour
     {
         Debug.Log(counter);
 
-        if (counter == 24) // A round of 4 elicitations is done
-        {
-            //todo
-        }
-        //if (counter % 6 == 0 && counter != 0)
-        //{
-        //    yield return StartCoroutine(ToNext());
-        //}
+        Debug.Log("-----------------------: " + nextStep);
 
         switch (nextStep)
         {
             case NextStep.Video:
                 StartCoroutine(PlayVideo());
-                StartCoroutine(Sleep(5)); // Duration of the Video: 60s
                 break;
             case NextStep.Task:
                 break;
@@ -349,6 +469,11 @@ public class MediaController : MonoBehaviour
         nextStep = NextStep.Rest;
 
         yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feeling to the avatar next to you. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", true));
+
+
+        yield return StartCoroutine(Sleep(5));
+
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feeling to the avatar next to you. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", true, true));
     }
 
     IEnumerator Finish()
@@ -356,19 +481,21 @@ public class MediaController : MonoBehaviour
         yield return StartCoroutine(ScreenSetups(false, false, false, false, "Thank you for participating our experiment, now you may remove the VR headset and let the experimenter know it is all finished."));
     }
 
-    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikin = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false)
+    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikin = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false, bool buttonAbRNextOn = false)
     {
         if (videoPlayer != null) videoPlayer.Stop();
         if (audioSource != null) audioSource.Stop();
         videoScreen.enabled = videoScreenOn;
         imageScreen.enabled = imageScreenOn;
 
-        ManikinSetups(manikin);
+        StartCoroutine(ManikinSetups(manikin));
 
         buttonStartExperiment.gameObject.SetActive(buttonStartExperimentOn);
         this.topText.text = topText;
 
         this.avatar.SetActive(avatar);
+
+        buttonAbRNext.gameObject.SetActive(buttonAbRNextOn);
 
         yield return null;
     }

@@ -21,6 +21,9 @@ namespace Assets.Scripts.Models
         public DateTime Timestamp { get; set; }
         public int Counter { get; set; }
 
+        // 0 means no clip (step AbR), 1 means clip 1, 2 means clip 2
+        public int Clip { get; set; }
+
         public ExperimentResult(int userId, int settingId, int method, int arousal, int valence, int dominance, int counter)
         {
             UserId = userId;
@@ -43,7 +46,7 @@ namespace Assets.Scripts.Models
                     {
                         //cmd.CommandText = "INSERT INTO Result VALUES (null, '" + manikin + "', " + userId + ", CURRENT_TIMESTAMP, " + counter + ")";
 
-                        cmd.CommandText = "INSERT INTO ExperimentResult (\"userId\", \"settingId\", \"method\", \"arousalScale\", \"valenceScale\", \"dominanceScale\", \"timestamp\", \"counter\") VALUES(" + UserId + ", " + SettingId + ", " + Method + ", " + ArousalScale + ", " + ValenceScale + ", " + DominanceScale + ", 'CURRENT_TIMESTAMP', " + Counter + "); ";
+                        cmd.CommandText = "INSERT INTO ExperimentResult (\"userId\", \"settingId\", \"method\", \"arousalScale\", \"valenceScale\", \"dominanceScale\", \"timestamp\", \"counter\", \"clip\") VALUES(" + UserId + ", " + SettingId + ", " + Method + ", " + ArousalScale + ", " + ValenceScale + ", " + DominanceScale + ", 'CURRENT_TIMESTAMP', " + Counter + ", " + Clip + "); ";
 
                         cmd.ExecuteNonQuery();
                         dbConnection.Close();
