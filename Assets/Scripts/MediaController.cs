@@ -39,7 +39,9 @@ public class MediaController : MonoBehaviour
 
     int[,] pilotSequence = new int[,] { { 0, 1 }, { 1, 0 } };
 
-    public VideoClip videoClip;
+    public VideoClip videoClipHappy1;
+    public VideoClip videoClipHappy2;
+
     private VideoPlayer videoPlayer;
     public Renderer videoScreen;
     public RenderTexture videoMaterialTexture;
@@ -176,7 +178,8 @@ public class MediaController : MonoBehaviour
         var audioSource = gameObject.AddComponent<AudioSource>();
 
         videoPlayer.playOnAwake = false;
-        videoPlayer.clip = videoClip;
+        //videoPlayer.clip = videoClipHappy1;
+        videoPlayer.clip = videoClipHappy2;
         videoPlayer.renderMode = VideoRenderMode.RenderTexture;
         videoPlayer.targetTexture = videoMaterialTexture;
         videoPlayer.targetMaterialRenderer = videoScreen;

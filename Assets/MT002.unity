@@ -1188,7 +1188,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3271ba4fb65d1a848ac87fdc0ea342f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  videoClip: {fileID: 32900000, guid: 20e90f58e06e1004f93fb588272a73bc, type: 3}
+  videoClipHappy1: {fileID: 32900000, guid: 20e90f58e06e1004f93fb588272a73bc, type: 3}
+  videoClipHappy2: {fileID: 32900000, guid: d54c2115d46c4f340aa4dc65dfc231c9, type: 3}
   videoScreen: {fileID: 1321310856}
   videoMaterialTexture: {fileID: 8400000, guid: 835a33d873f032d41914140183137a25,
     type: 2}
@@ -1207,15 +1208,17 @@ MonoBehaviour:
   a7: {fileID: 2103972001}
   a8: {fileID: 302723440}
   a9: {fileID: 1640976657}
-  m1: {fileID: 1263903879}
-  m2: {fileID: 729561622}
-  m3: {fileID: 1938529748}
-  m4: {fileID: 244315430}
-  m5: {fileID: 1903315508}
-  m6: {fileID: 977323631}
-  m7: {fileID: 2067084216}
-  m8: {fileID: 111510503}
-  m9: {fileID: 1803270173}
+  arousalGroup: {fileID: 1013075794}
+  v1: {fileID: 1263903879}
+  v2: {fileID: 729561622}
+  v3: {fileID: 1938529748}
+  v4: {fileID: 244315430}
+  v5: {fileID: 1903315508}
+  v6: {fileID: 977323631}
+  v7: {fileID: 2067084216}
+  v8: {fileID: 111510503}
+  v9: {fileID: 1803270173}
+  valenceGroup: {fileID: 864098948}
   d1: {fileID: 921407669}
   d2: {fileID: 174439413}
   d3: {fileID: 694183051}
@@ -1225,10 +1228,8 @@ MonoBehaviour:
   d7: {fileID: 1532922228}
   d8: {fileID: 1440434288}
   d9: {fileID: 447145331}
-  buttonSubmitManikin: {fileID: 1801445111}
-  arousalGroup: {fileID: 1013075794}
-  manikinGroup: {fileID: 864098948}
   dominanceGroup: {fileID: 376391688}
+  buttonSubmitManikin: {fileID: 1801445111}
   buttonAbRNext: {fileID: 1937815408}
   avatar: {fileID: 1543801896}
 --- !u!4 &136070908

@@ -13,8 +13,11 @@ namespace Assets.Scripts.Models
     {
         public int ID { get; set; }
         public int UserId { get; set; }
+        // 0=VR, 1=RW
         public int Environment { get; set; }
+        // 0=Sad, 1=Anger, 2=Happy, 3=Exciting
         public int Emotion { get; set; }
+        // 24 combinations, from 0 to 23
         public int Sequence { get; set; }
 
         public ExperimentSetting GetExperimentSettingByUserId(string connString, int userId)
