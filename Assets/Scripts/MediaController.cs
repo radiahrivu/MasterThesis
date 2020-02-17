@@ -15,7 +15,8 @@ public class MediaController : MonoBehaviour
         Image,
         Audio,
         Rest,
-        Manikin
+        Manikin,
+        Finish
     }
 
     enum Emotion
@@ -117,9 +118,12 @@ public class MediaController : MonoBehaviour
     {
         StartCoroutine(ScreenSetups(false, false, false, true, "Welcome! Please observe and get familiar with the room and hit the \"Start Experiment\" button when you feel ready."));
 
-        connString = "URI=file:" + Application.dataPath + "/MT_Ruoyu.sqlite";
+        // tochange
+        //connString = "URI=file:" + Application.dataPath + "/MT_Ruoyu.sqlite";
+        connString = "URI=file:" + Application.dataPath + "/Test_DB.sqlite";
 
-        userId = 1;
+        // tochange
+        userId = 2;
 
         setting = new ExperimentSetting();
         setting = setting.GetExperimentSettingByUserId(connString, userId);
@@ -167,7 +171,9 @@ public class MediaController : MonoBehaviour
 
             result.InsertResult(connString);
 
+            arousalGroup.SetAllTogglesOff();
             valenceGroup.SetAllTogglesOff();
+            dominanceGroup.SetAllTogglesOff();
 
             counter++;
 
@@ -329,15 +335,45 @@ public class MediaController : MonoBehaviour
     {
         Debug.Log(counter);
 
+        switch (counter) // Reach end of each REST round, then entering into the next phase
+        {
+            case 10:
+                methodCounter++;
+                nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
+                Then();
+                break;
+            case 20:
+                // Finish the pilot experiment
+                nextStep = NextStep.Finish;
+                Then();
+
+                //methodCounter++;
+                //nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
+                //Then();
+                break;
+            case 30:
+                methodCounter++;
+                nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
+                Then();
+                break;
+            case 40:
+                // Finish the experiment
+                nextStep = NextStep.Finish;
+                Then();
+                break;
+            default:
+                break;
+        }
+
         Debug.Log("-----------------------: " + nextStep);
 
         switch (nextStep)
         {
             case NextStep.Video:
-                StartCoroutine(PlayVideo());
+                yield return StartCoroutine(PlayVideo());
                 break;
             case NextStep.Rest:
-                StartCoroutine(ToRest());
+                yield return StartCoroutine(ToRest());
                 break;
             case NextStep.Image:
                 yield return StartCoroutine(PlayImage());
@@ -358,10 +394,13 @@ public class MediaController : MonoBehaviour
                 Then();
                 break;
             case NextStep.AbR:
-                StartCoroutine(ToAbR());
+                yield return StartCoroutine(ToAbR());
                 break;
             case NextStep.Manikin:
-                StartCoroutine(ToManikin());
+                yield return StartCoroutine(ToManikin());
+                break;
+            case NextStep.Finish:
+                yield return StartCoroutine(Finish());
                 break;
             default:
                 break;
@@ -375,6 +414,7 @@ public class MediaController : MonoBehaviour
         yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please take a rest (around 30 seconds) until our next question. During the break you should keep the VR headset on and look around or think about anything."));
 
         yield return StartCoroutine(Sleep(30)); // 30s break
+
         nextStep = NextStep.Manikin;
         counter++;
 
@@ -383,34 +423,6 @@ public class MediaController : MonoBehaviour
 
     IEnumerator ToManikin()
     {
-        switch (counter) // Reach end of each REST round, then entering into the next phase
-        {
-            case 10:
-                methodCounter++;
-                nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
-                StartCoroutine(Then());
-                break;
-            case 20:
-                // Finish the pilot experiment
-                StartCoroutine(Finish());
-
-                //methodCounter++;
-                //nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
-                //StartCoroutine(Then());
-                break;
-            case 30:
-                methodCounter++;
-                nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
-                StartCoroutine(Then());
-                break;
-            case 40:
-                // Finish the experiment
-                StartCoroutine(Finish());
-                break;
-            default:
-                break;
-        }
-
         nextStep = NextStep.Rest;
 
         yield return StartCoroutine(ScreenSetups(false, false, true, false, "Please evaluate your current emotion, with upper part as how strong your emotion is, and middle row as how negative or positive do you feel, the lower part indicates how much your emotion is affecting you right now. To proceed further, please click \"Subimit my Selection\" button after selecting all 3 rows."));
