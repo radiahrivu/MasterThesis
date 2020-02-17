@@ -14,7 +14,6 @@ public class MediaController : MonoBehaviour
         AbR,
         Image,
         Audio,
-        Task,
         Rest,
         Manikin
     }
@@ -129,23 +128,8 @@ public class MediaController : MonoBehaviour
     public void OnClickStartExperiment()
     {
         counter = 0;
-
-        StartCoroutine(StartExperiment(pilotSequence[setting.Sequence, methodCounter]));
-    }
-
-    IEnumerator StartExperiment(int firstStep)
-    {
-        nextStep = (NextStep)firstStep;
-
-        //yield return new WaitForSeconds(.5f);
-        //StartCoroutine(Then());
-
-        //yield return StartCoroutine(PlayVideo());
-        //yield return StartCoroutine(Sleep(5)); // Duration of the Video: 60s
-
-        //nextStep = NextStep.Manikin;
-        //counter++;
-        yield return StartCoroutine(Then());
+        nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
+        StartCoroutine(Then());
     }
 
     public void OnClickButtonSubmitManikin()
@@ -352,8 +336,6 @@ public class MediaController : MonoBehaviour
             case NextStep.Video:
                 StartCoroutine(PlayVideo());
                 break;
-            case NextStep.Task:
-                break;
             case NextStep.Rest:
                 StartCoroutine(ToRest());
                 break;
@@ -388,47 +370,27 @@ public class MediaController : MonoBehaviour
         yield return null;
     }
 
-    //IEnumerator ToNext()
-    //{
-    //    switch (counter / 6)
-    //    {
-    //        case 1:
-    //            yield return StartCoroutine(PlayImage());
-    //            yield return StartCoroutine(Sleep(5)); // 30s display time
-
-    //            yield return StartCoroutine(ScreenSetups());
-
-    //            nextStep = NextStep.Manikin;
-    //            counter++;
-    //            Then();
-    //            break;
-    //        case 2:
-    //            yield return StartCoroutine(PlayAudio());
-    //            yield return StartCoroutine(Sleep(5)); // Duration of the Audio: 187s
-
-    //            yield return StartCoroutine(ScreenSetups());
-
-    //            nextStep = NextStep.Manikin;
-    //            counter++;
-    //            Then();
-    //            break;
-    //        case 3:
-    //            break;
-    //        default:
-    //            break;
-    //    }
-    //}
-
     IEnumerator ToRest()
+    {
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please take a rest (around 30 seconds) until our next question. During the break you should keep the VR headset on and look around or think about anything."));
+
+        yield return StartCoroutine(Sleep(30)); // 30s break
+        nextStep = NextStep.Manikin;
+        counter++;
+
+        yield return StartCoroutine(Then());
+    }
+
+    IEnumerator ToManikin()
     {
         switch (counter) // Reach end of each REST round, then entering into the next phase
         {
-            case 5:
+            case 10:
                 methodCounter++;
                 nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
                 StartCoroutine(Then());
                 break;
-            case 11:
+            case 20:
                 // Finish the pilot experiment
                 StartCoroutine(Finish());
 
@@ -436,12 +398,12 @@ public class MediaController : MonoBehaviour
                 //nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
                 //StartCoroutine(Then());
                 break;
-            case 17:
+            case 30:
                 methodCounter++;
                 nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
                 StartCoroutine(Then());
                 break;
-            case 23:
+            case 40:
                 // Finish the experiment
                 StartCoroutine(Finish());
                 break;
@@ -449,31 +411,21 @@ public class MediaController : MonoBehaviour
                 break;
         }
 
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please take a rest until our next question."));
-
-        yield return StartCoroutine(Sleep(30)); // 30s break
-        nextStep = NextStep.Manikin;
-
-        yield return StartCoroutine(Then());
-    }
-
-    IEnumerator ToManikin()
-    {
         nextStep = NextStep.Rest;
 
-        yield return StartCoroutine(ScreenSetups(false, false, true, false, "Please evaluate your current emotions, with bigger size you choose indicating stronger emotion. To proceed further, please click \"Subimit my Selection\" button after fulfilling the form."));
+        yield return StartCoroutine(ScreenSetups(false, false, true, false, "Please evaluate your current emotion, with upper part as how strong your emotion is, and middle row as how negative or positive do you feel, the lower part indicates how much your emotion is affecting you right now. To proceed further, please click \"Subimit my Selection\" button after selecting all 3 rows."));
     }
 
     IEnumerator ToAbR()
     {
         nextStep = NextStep.Rest;
 
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feeling to the avatar next to you. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", true));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feelings to the avatar next to you. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", true));
 
 
-        yield return StartCoroutine(Sleep(5));
+        yield return StartCoroutine(Sleep(120));
 
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feeling to the avatar next to you. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", true, true));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feelings to the avatar next to you. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", true, true));
     }
 
     IEnumerator Finish()
