@@ -113,6 +113,8 @@ public class MediaController : MonoBehaviour
 
     ExperimentSetting setting;
 
+    public Text finishText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -123,7 +125,7 @@ public class MediaController : MonoBehaviour
         connString = "URI=file:" + Application.dataPath + "/Test_DB.sqlite";
 
         // tochange
-        userId = 2;
+        userId = 3;
 
         setting = new ExperimentSetting();
         setting = setting.GetExperimentSettingByUserId(connString, userId);
@@ -342,7 +344,7 @@ public class MediaController : MonoBehaviour
                 nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
                 Then();
                 break;
-            case 20:
+            case 19:
                 // Finish the pilot experiment
                 nextStep = NextStep.Finish;
                 Then();
@@ -351,12 +353,12 @@ public class MediaController : MonoBehaviour
                 //nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
                 //Then();
                 break;
-            case 30:
+            case 28:
                 methodCounter++;
                 nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
                 Then();
                 break;
-            case 40:
+            case 37:
                 // Finish the experiment
                 nextStep = NextStep.Finish;
                 Then();
@@ -411,7 +413,7 @@ public class MediaController : MonoBehaviour
 
     IEnumerator ToRest()
     {
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please take a rest (around 30 seconds) until our next question. During the break you should keep the VR headset on and look around or think about anything."));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please take a rest (around 30 seconds) until our next question. During the break you should keep the VR headset on and look around or think about anything else."));
 
         yield return StartCoroutine(Sleep(30)); // 30s break
 
@@ -425,27 +427,27 @@ public class MediaController : MonoBehaviour
     {
         nextStep = NextStep.Rest;
 
-        yield return StartCoroutine(ScreenSetups(false, false, true, false, "Please evaluate your current emotion, with upper part as how strong your emotion is, and middle row as how negative or positive do you feel, the lower part indicates how much your emotion is affecting you right now. To proceed further, please click \"Subimit my Selection\" button after selecting all 3 rows."));
+        yield return StartCoroutine(ScreenSetups(false, false, true, false, "Please evaluate your current emotion, with upper part as how negative or positive do you feel, and middle row as how strong your emotion is, the lower part indicates how much you can affect your emotion right now. To proceed further, please click \"Subimit my Selection\" button after selecting all 3 rows.")); 
     }
 
     IEnumerator ToAbR()
     {
         nextStep = NextStep.Rest;
 
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feelings to the avatar next to you. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", true));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feelings in this environment. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes."));
 
 
         yield return StartCoroutine(Sleep(120));
 
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feelings to the avatar next to you. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", true, true));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feelings in this environment. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", false, true));
     }
 
     IEnumerator Finish()
     {
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Thank you for participating our experiment, now you may remove the VR headset and let the experimenter know it is all finished."));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, "", false, false, true));
     }
 
-    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikin = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false, bool buttonAbRNextOn = false)
+    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikin = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false, bool buttonAbRNextOn = false, bool finishTextOn = false)
     {
         if (videoPlayer != null) videoPlayer.Stop();
         if (audioSource != null) audioSource.Stop();
@@ -457,9 +459,11 @@ public class MediaController : MonoBehaviour
         buttonStartExperiment.gameObject.SetActive(buttonStartExperimentOn);
         this.topText.text = topText;
 
-        this.avatar.SetActive(avatar);
+        this.avatar.SetActive(false);
 
         buttonAbRNext.gameObject.SetActive(buttonAbRNextOn);
+
+        this.finishText.gameObject.SetActive(finishTextOn);
 
         yield return null;
     }

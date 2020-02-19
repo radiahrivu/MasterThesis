@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Mono.Data.Sqlite;
+using System;
 using System.Data;
-using Mono.Data.Sqlite;
 using UnityEngine;
 
 namespace Assets.Scripts.Models
@@ -46,7 +42,7 @@ namespace Assets.Scripts.Models
                     {
                         //cmd.CommandText = "INSERT INTO Result VALUES (null, '" + manikin + "', " + userId + ", CURRENT_TIMESTAMP, " + counter + ")";
 
-                        cmd.CommandText = "INSERT INTO ExperimentResult (\"userId\", \"settingId\", \"method\", \"arousalScale\", \"valenceScale\", \"dominanceScale\", \"timestamp\", \"counter\", \"clip\") VALUES(" + UserId + ", " + SettingId + ", " + Method + ", " + ArousalScale + ", " + ValenceScale + ", " + DominanceScale + ", 'CURRENT_TIMESTAMP', " + Counter + ", " + Clip + "); ";
+                        cmd.CommandText = "INSERT INTO ExperimentResult (\"userId\", \"settingId\", \"method\", \"arousalScale\", \"valenceScale\", \"dominanceScale\", \"counter\", \"clip\") VALUES(" + UserId + ", " + SettingId + ", " + Method + ", " + ArousalScale + ", " + ValenceScale + ", " + DominanceScale + ", " + Counter + ", " + Clip + "); ";
 
                         cmd.ExecuteNonQuery();
                         dbConnection.Close();
