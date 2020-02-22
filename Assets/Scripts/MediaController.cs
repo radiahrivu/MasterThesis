@@ -1,6 +1,6 @@
-﻿using Assets.Scripts.Models;
+﻿using Assets.Scripts.Helpers;
+using Assets.Scripts.Models;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -118,7 +118,7 @@ public class MediaController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(ScreenSetups(false, false, false, true, "Welcome! Please observe and get familiar with the room and hit the \"Start Experiment\" button when you feel ready."));
+        StartCoroutine(ScreenSetups(false, false, false, true, RealWorld.Helpers.MainScreenSetup.StartingText()));
 
         // tochange
         //connString = "URI=file:" + Application.dataPath + "/MT_Ruoyu.sqlite";
@@ -183,7 +183,7 @@ public class MediaController : MonoBehaviour
         }
         else
         {
-            StartCoroutine(ScreenSetups(false, false, true, false, "Please make sure you have selected one of the 9 choices per row and all 3 rows."));
+            StartCoroutine(ScreenSetups(false, false, true, false, MainScreenSetup.ManikinErrorText()));
         }
     }
 
@@ -342,26 +342,21 @@ public class MediaController : MonoBehaviour
             case 10:
                 methodCounter++;
                 nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
-                Then();
                 break;
-            case 19:
+            case 20:
                 // Finish the pilot experiment
                 nextStep = NextStep.Finish;
-                Then();
 
                 //methodCounter++;
                 //nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
-                //Then();
                 break;
-            case 28:
+            case 30:
                 methodCounter++;
                 nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
-                Then();
                 break;
-            case 37:
+            case 40:
                 // Finish the experiment
                 nextStep = NextStep.Finish;
-                Then();
                 break;
             default:
                 break;
@@ -411,9 +406,16 @@ public class MediaController : MonoBehaviour
         yield return null;
     }
 
+    IEnumerator ToManikin()
+    {
+        nextStep = NextStep.Rest;
+
+        yield return StartCoroutine(ScreenSetups(false, false, true, false, MainScreenSetup.ManikinText()));
+    }
+
     IEnumerator ToRest()
     {
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please take a rest (around 30 seconds) until our next question. During the break you should keep the VR headset on and look around or think about anything else."));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, MainScreenSetup.RestText()));
 
         yield return StartCoroutine(Sleep(30)); // 30s break
 
@@ -423,23 +425,15 @@ public class MediaController : MonoBehaviour
         yield return StartCoroutine(Then());
     }
 
-    IEnumerator ToManikin()
-    {
-        nextStep = NextStep.Rest;
-
-        yield return StartCoroutine(ScreenSetups(false, false, true, false, "Please evaluate your current emotion, with upper part as how negative or positive do you feel, and middle row as how strong your emotion is, the lower part indicates how much you can affect your emotion right now. To proceed further, please click \"Subimit my Selection\" button after selecting all 3 rows.")); 
-    }
-
     IEnumerator ToAbR()
     {
-        nextStep = NextStep.Rest;
+        nextStep = NextStep.Manikin;
 
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feelings in this environment. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes."));
-
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, MainScreenSetup.AbRText(((Emotion)setting.Emotion).ToString())));
 
         yield return StartCoroutine(Sleep(120));
 
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "Please think of the " + (Emotion)setting.Emotion + " memory as we informed earlier, then you can share the memory or your feelings in this environment. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.", false, true));
+        yield return StartCoroutine(ScreenSetups(false, false, false, false, MainScreenSetup.AbRText(((Emotion)setting.Emotion).ToString()), false, true));
     }
 
     IEnumerator Finish()
@@ -447,14 +441,14 @@ public class MediaController : MonoBehaviour
         yield return StartCoroutine(ScreenSetups(false, false, false, false, "", false, false, true));
     }
 
-    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikin = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false, bool buttonAbRNextOn = false, bool finishTextOn = false)
+    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikinOn = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false, bool buttonAbRNextOn = false, bool finishTextOn = false)
     {
         if (videoPlayer != null) videoPlayer.Stop();
         if (audioSource != null) audioSource.Stop();
         videoScreen.enabled = videoScreenOn;
         imageScreen.enabled = imageScreenOn;
 
-        StartCoroutine(ManikinSetups(manikin));
+        StartCoroutine(ManikinSetups(manikinOn));
 
         buttonStartExperiment.gameObject.SetActive(buttonStartExperimentOn);
         this.topText.text = topText;
@@ -468,39 +462,39 @@ public class MediaController : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator ManikinSetups(bool manikin)
+    IEnumerator ManikinSetups(bool manikinOn)
     {
-        a1.gameObject.SetActive(manikin);
-        a2.gameObject.SetActive(manikin);
-        a3.gameObject.SetActive(manikin);
-        a4.gameObject.SetActive(manikin);
-        a5.gameObject.SetActive(manikin);
-        a6.gameObject.SetActive(manikin);
-        a7.gameObject.SetActive(manikin);
-        a8.gameObject.SetActive(manikin);
-        a9.gameObject.SetActive(manikin);
+        v1.gameObject.SetActive(manikinOn);
+        v2.gameObject.SetActive(manikinOn);
+        v3.gameObject.SetActive(manikinOn);
+        v4.gameObject.SetActive(manikinOn);
+        v5.gameObject.SetActive(manikinOn);
+        v6.gameObject.SetActive(manikinOn);
+        v7.gameObject.SetActive(manikinOn);
+        v8.gameObject.SetActive(manikinOn);
+        v9.gameObject.SetActive(manikinOn);
 
-        v1.gameObject.SetActive(manikin);
-        v2.gameObject.SetActive(manikin);
-        v3.gameObject.SetActive(manikin);
-        v4.gameObject.SetActive(manikin);
-        v5.gameObject.SetActive(manikin);
-        v6.gameObject.SetActive(manikin);
-        v7.gameObject.SetActive(manikin);
-        v8.gameObject.SetActive(manikin);
-        v9.gameObject.SetActive(manikin);
+        a1.gameObject.SetActive(manikinOn);
+        a2.gameObject.SetActive(manikinOn);
+        a3.gameObject.SetActive(manikinOn);
+        a4.gameObject.SetActive(manikinOn);
+        a5.gameObject.SetActive(manikinOn);
+        a6.gameObject.SetActive(manikinOn);
+        a7.gameObject.SetActive(manikinOn);
+        a8.gameObject.SetActive(manikinOn);
+        a9.gameObject.SetActive(manikinOn);
 
-        d1.gameObject.SetActive(manikin);
-        d2.gameObject.SetActive(manikin);
-        d3.gameObject.SetActive(manikin);
-        d4.gameObject.SetActive(manikin);
-        d5.gameObject.SetActive(manikin);
-        d6.gameObject.SetActive(manikin);
-        d7.gameObject.SetActive(manikin);
-        d8.gameObject.SetActive(manikin);
-        d9.gameObject.SetActive(manikin);
+        d1.gameObject.SetActive(manikinOn);
+        d2.gameObject.SetActive(manikinOn);
+        d3.gameObject.SetActive(manikinOn);
+        d4.gameObject.SetActive(manikinOn);
+        d5.gameObject.SetActive(manikinOn);
+        d6.gameObject.SetActive(manikinOn);
+        d7.gameObject.SetActive(manikinOn);
+        d8.gameObject.SetActive(manikinOn);
+        d9.gameObject.SetActive(manikinOn);
 
-        buttonSubmitManikin.gameObject.SetActive(manikin);
+        buttonSubmitManikin.gameObject.SetActive(manikinOn);
 
         yield return null;
     }
