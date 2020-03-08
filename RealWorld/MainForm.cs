@@ -369,7 +369,6 @@ namespace RealWorld
                     sus.InsertResult(connString);
                 }
             }
-
             if (!c)
             {
                 return;
