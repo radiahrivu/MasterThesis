@@ -118,13 +118,13 @@ public class MediaController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(ScreenSetups(false, false, false, true, RealWorld.Helpers.MainScreenSetup.StartingText()));
+        StartCoroutine(ScreenSetups(false, false, false, true, MainScreenSetup.StartingText()));
 
-        // tochange
-        //connString = "URI=file:" + Application.dataPath + "/MT_Ruoyu.sqlite";
-        connString = "URI=file:" + Application.dataPath + "/Test_DB.sqlite";
+        // to change
+        //connString = "URI=file:" + Application.dataPath + "/DB/MT_Ruoyu.sqlite";
+        connString = "URI=file:" + Application.dataPath + "/DB/Test_DB.sqlite";
 
-        // tochange
+        // to change
         userId = 3;
 
         setting = new ExperimentSetting();

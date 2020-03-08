@@ -6,22 +6,21 @@ CREATE TABLE "ExperimentResult" (
 	"arousalScale"	INTEGER,
 	"valenceScale"	INTEGER,
 	"dominanceScale"	INTEGER,
-	"timestamp"	TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	"timestamp"	DATETIME DEFAULT CURRENT_TIMESTAMP,
 	"counter"	INTEGER,
-	"clip"	INTEGER
-);
+	"clip"	INTEGER,	
+	"emotion"	INTEGER
+)
 
 CREATE TABLE "ExperimentSetting" (
 	"id"	INTEGER PRIMARY KEY AUTOINCREMENT,
 	"userId"	INTEGER,
 	"environment"	INTEGER,
-	"emotion"	INTEGER,
 	"sequence"	INTEGER,
 	"videoClip"	INTEGER,
 	"audioClip"	INTEGER,
 	"imageClip"	INTEGER
-);
-
+)
 
 CREATE TABLE "User" (
 	"id"	INTEGER,
@@ -30,4 +29,4 @@ CREATE TABLE "User" (
 	"profession"	TEXT,
 	"vrExperience"	INTEGER,
 	PRIMARY KEY("id")
-);
+)

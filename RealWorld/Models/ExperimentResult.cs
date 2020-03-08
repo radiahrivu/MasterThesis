@@ -21,6 +21,8 @@ namespace RealWorld.Models
         // 0 means no clip (step AbR), 1 means clip 1, 2 means clip 2
         public int Clip { get; set; }
 
+        public int Emotion { get; set; }
+
         public ExperimentResult(int userId, int settingId, int method, int arousal, int valence, int dominance, int counter)
         {
             UserId = userId;
@@ -43,7 +45,7 @@ namespace RealWorld.Models
                     {
                         //cmd.CommandText = "INSERT INTO Result VALUES (null, '" + manikin + "', " + userId + ", CURRENT_TIMESTAMP, " + counter + ")";
 
-                        cmd.CommandText = "INSERT INTO ExperimentResult (\"userId\", \"settingId\", \"method\", \"arousalScale\", \"valenceScale\", \"dominanceScale\", \"counter\", \"clip\") VALUES(" + UserId + ", " + SettingId + ", " + Method + ", " + ArousalScale + ", " + ValenceScale + ", " + DominanceScale + ", " + Counter + ", " + Clip + "); ";
+                        cmd.CommandText = "INSERT INTO ExperimentResult (\"userId\", \"settingId\", \"method\", \"arousalScale\", \"valenceScale\", \"dominanceScale\", \"counter\", \"clip\", \"emotion\") VALUES(" + UserId + ", " + SettingId + ", " + Method + ", " + ArousalScale + ", " + ValenceScale + ", " + DominanceScale + ", " + Counter + ", " + Clip + ", " + Emotion + "); ";
 
                         cmd.ExecuteNonQuery();
                         dbConnection.Close();
