@@ -28,9 +28,24 @@ namespace Assets.Scripts.Helpers
             return "Please take a rest (around 30 seconds) until our next question. During the break you should keep the VR headset on and look around or think about anything else.";
         }
 
+        public static string AudioText()
+        {
+            return "Please listen to the audio source carefully.";
+        }
+
         public static string AbRText(string emotion)
         {
             return "Please think of the " + emotion + " memory as we informed earlier, then you can share the memory or your feelings in this environment. What you said will not be listened or recorded by any party. Once you are done, please click the \"Next Step\" button which will appear in 2 minutes.";
+        }
+
+        public static string FinishText()
+        {
+            return "Thank you for participating our experiment, now you may let the experimenter know it is all finished.";
+        }
+
+        public static string SUSErrorText()
+        {
+            return "Please make sure you have selected one of the 7 choices.";
         }
     }
 }

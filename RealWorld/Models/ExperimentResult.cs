@@ -23,7 +23,7 @@ namespace RealWorld.Models
 
         public int Emotion { get; set; }
 
-        public ExperimentResult(int userId, int settingId, int method, int arousal, int valence, int dominance, int counter)
+        public ExperimentResult(int userId, int settingId, int method, int arousal, int valence, int dominance, int counter,int emotion)
         {
             UserId = userId;
             SettingId = settingId;
@@ -32,6 +32,7 @@ namespace RealWorld.Models
             ValenceScale = valence;
             DominanceScale = dominance;
             Counter = counter;
+            Emotion = emotion;
         }
 
         public void InsertResult(string connString)

@@ -46,7 +46,6 @@
             this.v5 = new System.Windows.Forms.RadioButton();
             this.v4 = new System.Windows.Forms.RadioButton();
             this.arousalGroup = new System.Windows.Forms.Panel();
-            this.ButtonAbRNext = new System.Windows.Forms.Button();
             this.a9 = new System.Windows.Forms.RadioButton();
             this.a7 = new System.Windows.Forms.RadioButton();
             this.a8 = new System.Windows.Forms.RadioButton();
@@ -56,6 +55,7 @@
             this.a3 = new System.Windows.Forms.RadioButton();
             this.a5 = new System.Windows.Forms.RadioButton();
             this.a4 = new System.Windows.Forms.RadioButton();
+            this.ButtonAbRNext = new System.Windows.Forms.Button();
             this.dominanceGroup = new System.Windows.Forms.Panel();
             this.d9 = new System.Windows.Forms.RadioButton();
             this.d7 = new System.Windows.Forms.RadioButton();
@@ -68,21 +68,35 @@
             this.d4 = new System.Windows.Forms.RadioButton();
             this.ButtonSubmitManikin = new System.Windows.Forms.Button();
             this.LabelFinishText = new System.Windows.Forms.Label();
+            this.imageBox = new System.Windows.Forms.PictureBox();
+            this.PanelSUS = new System.Windows.Forms.Panel();
+            this.LabelRight = new System.Windows.Forms.Label();
+            this.LabelLeft = new System.Windows.Forms.Label();
+            this.radioButton7 = new System.Windows.Forms.RadioButton();
+            this.radioButton6 = new System.Windows.Forms.RadioButton();
+            this.radioButton5 = new System.Windows.Forms.RadioButton();
+            this.radioButton4 = new System.Windows.Forms.RadioButton();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.ButtonSUS = new System.Windows.Forms.Button();
             this.LayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.VideoPlayer)).BeginInit();
             this.valenceGroup.SuspendLayout();
             this.arousalGroup.SuspendLayout();
             this.dominanceGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.imageBox)).BeginInit();
+            this.PanelSUS.SuspendLayout();
             this.SuspendLayout();
             // 
             // LabelTopText
             // 
             this.LabelTopText.AutoSize = true;
-            this.LabelTopText.Font = new System.Drawing.Font("SimSun", 26.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.LabelTopText.Font = new System.Drawing.Font("SimSun", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.LabelTopText.Location = new System.Drawing.Point(9, 0);
             this.LabelTopText.Margin = new System.Windows.Forms.Padding(9, 0, 9, 0);
             this.LabelTopText.Name = "LabelTopText";
-            this.LabelTopText.Size = new System.Drawing.Size(167, 35);
+            this.LabelTopText.Size = new System.Drawing.Size(114, 24);
             this.LabelTopText.TabIndex = 0;
             this.LabelTopText.Text = "TOP TEXT";
             // 
@@ -283,19 +297,6 @@
             this.arousalGroup.Size = new System.Drawing.Size(1869, 193);
             this.arousalGroup.TabIndex = 31;
             // 
-            // ButtonAbRNext
-            // 
-            this.ButtonAbRNext.Font = new System.Drawing.Font("SimSun", 26.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ButtonAbRNext.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ButtonAbRNext.Location = new System.Drawing.Point(822, 812);
-            this.ButtonAbRNext.Name = "ButtonAbRNext";
-            this.ButtonAbRNext.Size = new System.Drawing.Size(343, 128);
-            this.ButtonAbRNext.TabIndex = 33;
-            this.ButtonAbRNext.Text = "Next Step";
-            this.ButtonAbRNext.UseVisualStyleBackColor = true;
-            this.ButtonAbRNext.Visible = false;
-            this.ButtonAbRNext.Click += new System.EventHandler(this.ButtonAbRNext_Click);
-            // 
             // a9
             // 
             this.a9.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("a9.BackgroundImage")));
@@ -421,6 +422,19 @@
             this.a4.Text = "4";
             this.a4.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.a4.UseVisualStyleBackColor = true;
+            // 
+            // ButtonAbRNext
+            // 
+            this.ButtonAbRNext.Font = new System.Drawing.Font("SimSun", 26.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.ButtonAbRNext.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.ButtonAbRNext.Location = new System.Drawing.Point(822, 812);
+            this.ButtonAbRNext.Name = "ButtonAbRNext";
+            this.ButtonAbRNext.Size = new System.Drawing.Size(343, 128);
+            this.ButtonAbRNext.TabIndex = 33;
+            this.ButtonAbRNext.Text = "Next Step";
+            this.ButtonAbRNext.UseVisualStyleBackColor = true;
+            this.ButtonAbRNext.Visible = false;
+            this.ButtonAbRNext.Click += new System.EventHandler(this.ButtonAbRNext_Click);
             // 
             // dominanceGroup
             // 
@@ -586,12 +600,145 @@
     " it is all finished.";
             this.LabelFinishText.Visible = false;
             // 
+            // imageBox
+            // 
+            this.imageBox.Location = new System.Drawing.Point(24, 189);
+            this.imageBox.Name = "imageBox";
+            this.imageBox.Size = new System.Drawing.Size(1905, 834);
+            this.imageBox.TabIndex = 34;
+            this.imageBox.TabStop = false;
+            // 
+            // PanelSUS
+            // 
+            this.PanelSUS.Controls.Add(this.LabelRight);
+            this.PanelSUS.Controls.Add(this.LabelLeft);
+            this.PanelSUS.Controls.Add(this.radioButton7);
+            this.PanelSUS.Controls.Add(this.radioButton6);
+            this.PanelSUS.Controls.Add(this.radioButton5);
+            this.PanelSUS.Controls.Add(this.radioButton4);
+            this.PanelSUS.Controls.Add(this.radioButton3);
+            this.PanelSUS.Controls.Add(this.radioButton2);
+            this.PanelSUS.Controls.Add(this.radioButton1);
+            this.PanelSUS.Location = new System.Drawing.Point(64, 526);
+            this.PanelSUS.Name = "PanelSUS";
+            this.PanelSUS.Size = new System.Drawing.Size(1787, 324);
+            this.PanelSUS.TabIndex = 35;
+            // 
+            // LabelRight
+            // 
+            this.LabelRight.AutoSize = true;
+            this.LabelRight.Location = new System.Drawing.Point(1418, 155);
+            this.LabelRight.Name = "LabelRight";
+            this.LabelRight.Size = new System.Drawing.Size(123, 35);
+            this.LabelRight.TabIndex = 8;
+            this.LabelRight.Text = "label1";
+            // 
+            // LabelLeft
+            // 
+            this.LabelLeft.AutoSize = true;
+            this.LabelLeft.Location = new System.Drawing.Point(47, 151);
+            this.LabelLeft.Name = "LabelLeft";
+            this.LabelLeft.Size = new System.Drawing.Size(123, 35);
+            this.LabelLeft.TabIndex = 7;
+            this.LabelLeft.Text = "label1";
+            // 
+            // radioButton7
+            // 
+            this.radioButton7.AutoSize = true;
+            this.radioButton7.Location = new System.Drawing.Point(1237, 151);
+            this.radioButton7.Name = "radioButton7";
+            this.radioButton7.Size = new System.Drawing.Size(51, 39);
+            this.radioButton7.TabIndex = 6;
+            this.radioButton7.TabStop = true;
+            this.radioButton7.Text = "7";
+            this.radioButton7.UseVisualStyleBackColor = true;
+            // 
+            // radioButton6
+            // 
+            this.radioButton6.AutoSize = true;
+            this.radioButton6.Location = new System.Drawing.Point(1107, 149);
+            this.radioButton6.Name = "radioButton6";
+            this.radioButton6.Size = new System.Drawing.Size(51, 39);
+            this.radioButton6.TabIndex = 5;
+            this.radioButton6.TabStop = true;
+            this.radioButton6.Text = "6";
+            this.radioButton6.UseVisualStyleBackColor = true;
+            // 
+            // radioButton5
+            // 
+            this.radioButton5.AutoSize = true;
+            this.radioButton5.Location = new System.Drawing.Point(991, 151);
+            this.radioButton5.Name = "radioButton5";
+            this.radioButton5.Size = new System.Drawing.Size(51, 39);
+            this.radioButton5.TabIndex = 4;
+            this.radioButton5.TabStop = true;
+            this.radioButton5.Text = "5";
+            this.radioButton5.UseVisualStyleBackColor = true;
+            // 
+            // radioButton4
+            // 
+            this.radioButton4.AutoSize = true;
+            this.radioButton4.Location = new System.Drawing.Point(864, 151);
+            this.radioButton4.Name = "radioButton4";
+            this.radioButton4.Size = new System.Drawing.Size(51, 39);
+            this.radioButton4.TabIndex = 3;
+            this.radioButton4.TabStop = true;
+            this.radioButton4.Text = "4";
+            this.radioButton4.UseVisualStyleBackColor = true;
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Location = new System.Drawing.Point(728, 151);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(51, 39);
+            this.radioButton3.TabIndex = 2;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "3";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(597, 151);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(51, 39);
+            this.radioButton2.TabIndex = 1;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "2";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(469, 151);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(51, 39);
+            this.radioButton1.TabIndex = 0;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "1";
+            this.radioButton1.UseVisualStyleBackColor = true;
+            // 
+            // ButtonSUS
+            // 
+            this.ButtonSUS.ForeColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.ButtonSUS.Location = new System.Drawing.Point(982, 936);
+            this.ButtonSUS.Name = "ButtonSUS";
+            this.ButtonSUS.Size = new System.Drawing.Size(183, 48);
+            this.ButtonSUS.TabIndex = 36;
+            this.ButtonSUS.Text = "Submit";
+            this.ButtonSUS.UseVisualStyleBackColor = true;
+            this.ButtonSUS.Click += new System.EventHandler(this.ButtonSUS_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(18F, 35F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.ClientSize = new System.Drawing.Size(1953, 1061);
+            this.Controls.Add(this.ButtonSUS);
+            this.Controls.Add(this.PanelSUS);
+            this.Controls.Add(this.imageBox);
             this.Controls.Add(this.ButtonAbRNext);
             this.Controls.Add(this.LabelFinishText);
             this.Controls.Add(this.ButtonSubmitManikin);
@@ -614,6 +761,9 @@
             this.valenceGroup.ResumeLayout(false);
             this.arousalGroup.ResumeLayout(false);
             this.dominanceGroup.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.imageBox)).EndInit();
+            this.PanelSUS.ResumeLayout(false);
+            this.PanelSUS.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -658,6 +808,18 @@
         private System.Windows.Forms.Button ButtonSubmitManikin;
         private System.Windows.Forms.Button ButtonAbRNext;
         private System.Windows.Forms.Label LabelFinishText;
+        private System.Windows.Forms.PictureBox imageBox;
+        private System.Windows.Forms.Panel PanelSUS;
+        private System.Windows.Forms.RadioButton radioButton7;
+        private System.Windows.Forms.RadioButton radioButton6;
+        private System.Windows.Forms.RadioButton radioButton5;
+        private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.RadioButton radioButton3;
+        private System.Windows.Forms.RadioButton radioButton2;
+        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.Label LabelRight;
+        private System.Windows.Forms.Label LabelLeft;
+        private System.Windows.Forms.Button ButtonSUS;
     }
 }
 

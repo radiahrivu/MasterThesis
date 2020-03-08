@@ -12,7 +12,7 @@ namespace RealWorld.Models
         public int UserId { get; set; }
         // 0=VR, 1=RW
         public int Environment { get; set; }
-        // 24 combinations, from 0 to 23
+        // 16 combinations, from 0 to 15
         public int Sequence { get; set; }
 
         // 1 means clip 1, 2 means clip 2
@@ -30,7 +30,7 @@ namespace RealWorld.Models
 
                     using (IDbCommand cmd = dbConnection.CreateCommand())
                     {
-                        cmd.CommandText = "SELECT id, sequence, videoClip, audioClip, imageClip FROM ExperimentSetting where userId=" + userId + " and environment = 0";
+                        cmd.CommandText = "SELECT id, sequence, videoClip, audioClip, imageClip FROM ExperimentSetting where userId=" + userId + " and environment = 1";
 
                         using (IDataReader reader = cmd.ExecuteReader())
                         {

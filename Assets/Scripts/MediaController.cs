@@ -35,10 +35,8 @@ public class MediaController : MonoBehaviour
         Audio
     }
 
-    // 0 = Video, 1 = AbR, 2 = Image, 3 = Audio
-    int[,] sequence = new int[,] { { 0, 1, 2, 3 }, { 0, 1, 3, 2 }, { 0, 2, 1, 3 }, { 0, 2, 3, 1 }, { 0, 3, 1, 2 }, { 0, 3, 2, 1 }, { 1, 0, 2, 3 }, { 1, 0, 3, 2 }, { 1, 2, 0, 3 }, { 1, 2, 3, 0 }, { 1, 3, 0, 2 }, { 1, 3, 2, 0 }, { 2, 0, 1, 3 }, { 2, 0, 3, 1 }, { 2, 1, 0, 3 }, { 2, 1, 3, 0 }, { 2, 3, 1, 0 }, { 2, 3, 0, 1 }, { 3, 0, 1, 2 }, { 3, 0, 2, 1 }, { 3, 1, 0, 2 }, { 3, 1, 2, 0 }, { 3, 2, 0, 1 }, { 3, 2, 1, 0 } };
-
-    int[,] pilotSequence = new int[,] { { 0, 1 }, { 1, 0 } };
+    // 0=Sv	1=Aa 2=Hi 3=Er 4=Ar 5=Hv 6=Ea 7=Si 8=Ha 9=Ei 10=Sr 11=Av 12=Ei 13=Sr 14=Av 15=Ha
+    readonly int[,] sequences = new int[,] { { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 8, 9, 10, 11 }, { 12, 13, 14, 15 }, { 0, 4, 8, 12 }, { 1, 5, 9, 13 }, { 2, 6, 10, 14 }, { 3, 7, 11, 15 }, { 3, 2, 1, 0 }, { 7, 6, 5, 4 }, { 11, 10, 9, 8 }, { 15, 14, 13, 12 }, { 12, 8, 4, 0 }, { 13, 9, 5, 1 }, { 14, 10, 6, 2 }, { 15, 11, 7, 3 } };
 
     public VideoClip videoClipHappy1;
     public VideoClip videoClipHappy2;
@@ -56,11 +54,26 @@ public class MediaController : MonoBehaviour
     public Renderer videoScreen;
     public RenderTexture videoMaterialTexture;
 
-    public Material imageMaterial;
+    public Material imageAngry1;
+    public Material imageAngry2;
+    public Material imageSad1;
+    public Material imageSad2;
+    public Material imageHappy1;
+    public Material imageHappy2;
+    public Material imageExciting1;
+    public Material imageExciting2;
+
     public Renderer imageScreen;
 
     public AudioSource audioSource;
-    public AudioClip audioClip;
+    public AudioClip audioAngry1;
+    public AudioClip audioAngry2;
+    public AudioClip audioSad1;
+    public AudioClip audioSad2;
+    public AudioClip audioHappy1;
+    public AudioClip audioHappy2;
+    public AudioClip audioExciting1;
+    public AudioClip audioExciting2;
 
     public Button buttonStartExperiment;
     public Text topText;
@@ -105,8 +118,11 @@ public class MediaController : MonoBehaviour
     public GameObject avatar;
 
     NextStep nextStep;
+    Emotion emotion;
+    Method method;
     int counter = 0;
     int methodCounter = 0;
+    int finishCounter = 0;
 
     string connString;
     int userId;
@@ -115,17 +131,27 @@ public class MediaController : MonoBehaviour
 
     public Text finishText;
 
+    public Toggle sus1;
+    public Toggle sus2;
+    public Toggle sus3;
+    public Toggle sus4;
+    public Toggle sus5;
+    public Toggle sus6;
+    public Toggle sus7;
+    public ToggleGroup susGroup;
+    public Button buttonSUS;
+
     // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(ScreenSetups(false, false, false, true, MainScreenSetup.StartingText()));
 
         // to change
-        //connString = "URI=file:" + Application.dataPath + "/DB/MT_Ruoyu.sqlite";
-        connString = "URI=file:" + Application.dataPath + "/DB/Test_DB.sqlite";
+        //connString = "URI=file:" + Application.dataPath + "/DB/Production.sqlite";
+        connString = "URI=file:" + Application.dataPath + "/DB/Test.sqlite";
 
         // to change
-        userId = 3;
+        userId = 1;
 
         setting = new ExperimentSetting();
         setting = setting.GetExperimentSettingByUserId(connString, userId);
@@ -134,7 +160,7 @@ public class MediaController : MonoBehaviour
     public void OnClickStartExperiment()
     {
         counter = 0;
-        nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
+        StartCoroutine(SetNextStep());
         StartCoroutine(Then());
     }
 
@@ -151,9 +177,9 @@ public class MediaController : MonoBehaviour
             Debug.Log(selectedToggleValence.name);
             Debug.Log(selectedToggleDominance.name);
 
-            var result = new ExperimentResult(userId, setting.ID, pilotSequence[setting.Sequence, methodCounter], int.Parse(selectedToggleArousal.name), int.Parse(selectedToggleValence.name), int.Parse(selectedToggleDominance.name), counter);
+            var result = new ExperimentResult(userId, setting.ID, (int)method, int.Parse(selectedToggleArousal.name), int.Parse(selectedToggleValence.name), int.Parse(selectedToggleDominance.name), counter, (int)emotion);
 
-            switch ((Method)pilotSequence[setting.Sequence, methodCounter])
+            switch (method)
             {
                 case Method.Video:
                     result.Clip = setting.VideoClip;
@@ -203,7 +229,7 @@ public class MediaController : MonoBehaviour
 
         videoPlayer.playOnAwake = false;
 
-        switch ((Emotion)setting.Emotion)
+        switch (emotion)
         {
             case Emotion.Anger:
                 if (setting.VideoClip == 1)
@@ -260,7 +286,7 @@ public class MediaController : MonoBehaviour
 
         counter++;
 
-        switch ((Emotion)setting.Emotion)
+        switch (emotion)
         {
             case Emotion.Anger:
                 if (setting.VideoClip == 1)
@@ -314,6 +340,52 @@ public class MediaController : MonoBehaviour
 
     IEnumerator PlayImage()
     {
+        switch (emotion)
+        {
+            case Emotion.Anger:
+                if (setting.VideoClip == 1)
+                {
+                    imageScreen.material = imageAngry1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    imageScreen.material = imageAngry2;
+                }
+                break;
+            case Emotion.Exciting:
+                if (setting.VideoClip == 1)
+                {
+                    imageScreen.material = imageExciting1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    imageScreen.material = imageExciting2;
+                }
+                break;
+            case Emotion.Happy:
+                if (setting.VideoClip == 1)
+                {
+                    imageScreen.material = imageHappy1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    imageScreen.material = imageHappy2;
+                }
+                break;
+            case Emotion.Sad:
+                if (setting.VideoClip == 1)
+                {
+                    imageScreen.material = imageSad1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    imageScreen.material = imageSad2;
+                }
+                break;
+            default:
+                break;
+        }
+
         yield return StartCoroutine(ScreenSetups(false, true));
 
         counter++;
@@ -325,7 +397,51 @@ public class MediaController : MonoBehaviour
     {
         yield return StartCoroutine(ScreenSetups());
 
-        audioSource.clip = audioClip;
+        switch (emotion)
+        {
+            case Emotion.Anger:
+                if (setting.VideoClip == 1)
+                {
+                    audioSource.clip = audioAngry1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    audioSource.clip = audioAngry2;
+                }
+                break;
+            case Emotion.Exciting:
+                if (setting.VideoClip == 1)
+                {
+                    audioSource.clip = audioExciting1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    audioSource.clip = audioExciting2;
+                }
+                break;
+            case Emotion.Happy:
+                if (setting.VideoClip == 1)
+                {
+                    audioSource.clip = audioHappy1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    audioSource.clip = audioHappy2;
+                }
+                break;
+            case Emotion.Sad:
+                if (setting.VideoClip == 1)
+                {
+                    audioSource.clip = audioSad1;
+                }
+                else if (setting.VideoClip == 2)
+                {
+                    audioSource.clip = audioSad2;
+                }
+                break;
+            default:
+                break;
+        }
         audioSource.Play(0);
 
         counter++;
@@ -341,18 +457,18 @@ public class MediaController : MonoBehaviour
         {
             case 10:
                 methodCounter++;
-                nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
+                StartCoroutine(SetNextStep());
                 break;
             case 20:
                 // Finish the pilot experiment
-                nextStep = NextStep.Finish;
+                //nextStep = NextStep.Finish;
 
-                //methodCounter++;
-                //nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
+                methodCounter++;
+                StartCoroutine(SetNextStep());
                 break;
             case 30:
                 methodCounter++;
-                nextStep = (NextStep)pilotSequence[setting.Sequence, methodCounter];
+                StartCoroutine(SetNextStep());
                 break;
             case 40:
                 // Finish the experiment
@@ -370,33 +486,49 @@ public class MediaController : MonoBehaviour
                 yield return StartCoroutine(PlayVideo());
                 break;
             case NextStep.Rest:
-                yield return StartCoroutine(ToRest());
+                yield return StartCoroutine(ScreenSetups(false, false, false, false, MainScreenSetup.RestText()));
+
+                yield return StartCoroutine(Sleep(30)); // 30s break
+
+                nextStep = NextStep.Manikin;
+                counter++;
+                yield return StartCoroutine(Then());
                 break;
             case NextStep.Image:
                 yield return StartCoroutine(PlayImage());
-                yield return StartCoroutine(Sleep(60)); // 60s display time
+                yield return StartCoroutine(Sleep(20)); // 20s display time
 
                 yield return StartCoroutine(ScreenSetups());
 
                 nextStep = NextStep.Manikin;
-                Then();
+                yield return StartCoroutine(Then());
                 break;
             case NextStep.Audio:
+                yield return StartCoroutine(ScreenSetups(false, false, false, false, MainScreenSetup.AudioText()));
                 yield return StartCoroutine(PlayAudio());
-                yield return StartCoroutine(Sleep(187)); // Duration of the Audio: 187s
+                yield return StartCoroutine(Sleep(5)); // Duration of the Audio: 5s
 
                 yield return StartCoroutine(ScreenSetups());
 
                 nextStep = NextStep.Manikin;
-                Then();
+                yield return StartCoroutine(Then());
                 break;
             case NextStep.AbR:
-                yield return StartCoroutine(ToAbR());
+                nextStep = NextStep.Manikin;
+
+                yield return StartCoroutine(ScreenSetups(false, false, false, false, MainScreenSetup.AbRText(emotion.ToString())));
+
+                yield return StartCoroutine(Sleep(120));
+
+                yield return StartCoroutine(ScreenSetups(false, false, false, false, MainScreenSetup.AbRText(emotion.ToString()), false, true));
                 break;
             case NextStep.Manikin:
-                yield return StartCoroutine(ToManikin());
+                nextStep = NextStep.Rest;
+
+                yield return StartCoroutine(ScreenSetups(false, false, true, false, MainScreenSetup.ManikinText()));
                 break;
             case NextStep.Finish:
+                finishCounter = 0;
                 yield return StartCoroutine(Finish());
                 break;
             default:
@@ -406,42 +538,69 @@ public class MediaController : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator ToManikin()
-    {
-        nextStep = NextStep.Rest;
-
-        yield return StartCoroutine(ScreenSetups(false, false, true, false, MainScreenSetup.ManikinText()));
-    }
-
-    IEnumerator ToRest()
-    {
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, MainScreenSetup.RestText()));
-
-        yield return StartCoroutine(Sleep(30)); // 30s break
-
-        nextStep = NextStep.Manikin;
-        counter++;
-
-        yield return StartCoroutine(Then());
-    }
-
-    IEnumerator ToAbR()
-    {
-        nextStep = NextStep.Manikin;
-
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, MainScreenSetup.AbRText(((Emotion)setting.Emotion).ToString())));
-
-        yield return StartCoroutine(Sleep(120));
-
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, MainScreenSetup.AbRText(((Emotion)setting.Emotion).ToString()), false, true));
-    }
-
     IEnumerator Finish()
     {
-        yield return StartCoroutine(ScreenSetups(false, false, false, false, "", false, false, true));
+        switch (finishCounter)
+        {
+            case 0:
+                StartCoroutine(ScreenSetups(false, false, false, false, "Please rate your sense of being in this office space, on the following scale from 1 to 7, where 7 represents your normal experience of being in a place. \r\n\r\nI had a sense of “being there” in this office space:", false, false, false, true));
+                //LabelLeft.Text = "Not at all";
+                //LabelRight.Text = "Very much";
+                break;
+            case 1:
+                StartCoroutine(ScreenSetups(false, false, false, false, "To what extent were there times during the experience when this office space was the reality for you? \r\n\r\nThere were times during the experience when this office space was the reality for me... ", false, false, false, true));
+                //LabelLeft.Text = "At no time";
+                //LabelRight.Text = "Almost all the time";
+                break;
+            case 2:
+                StartCoroutine(ScreenSetups(false, false, false, false, "When you think back about your experience, do you think of this office space more as images that you saw, or more as somewhere that you visited? \r\n\r\nThis office space seems to me to be more like...", false, false, false, true));
+                //LabelLeft.Text = "Images that I saw";
+                //LabelRight.Text = "Somewhere that I visited";
+                break;
+            case 3:
+                StartCoroutine(ScreenSetups(false, false, false, false, "During the time of the experience, which was strongest on the whole, your sense of being in this office space, or of being elsewhere? \r\n\r\nI had a stronger sense of...", false, false, false, true));
+                //LabelLeft.Text = "Being elsewhere";
+                //LabelRight.Text = "Being in this office space";
+                break;
+            case 4:
+                StartCoroutine(ScreenSetups(false, false, false, false, "Consider your memory of being in this office space. How similar in terms of the structure of the memory is this to the structure of the memory of other places you have been today? By ‘structure of the memory’ consider things like the extent to which you have a visual memory of the office space, whether that memory is in color, the extent to which the memory seems vivid or realistic, its size, location in your imagination, the extent to which it is panoramic in your imagination, and other such structural elements. \r\n\r\nI think of this office space as a place in a way similar to other places that I've been today...", false, false, false, true));
+                //LabelLeft.Text = "Not at all";
+                //LabelRight.Text = "Very much so";
+                break;
+            case 5:
+                StartCoroutine(ScreenSetups(false, false, false, false, "During the time of the experience, did you often think to yourself that you were actually in this office space? \r\n\r\nDuring the experience I often thought that I was really sitting in this office space...", false, false, false, true));
+                //LabelLeft.Text = "Not very often";
+                //LabelRight.Text = "Very much so";
+                break;
+            default:
+                break;
+        }
+
+        yield return null;
     }
 
-    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikinOn = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false, bool buttonAbRNextOn = false, bool finishTextOn = false)
+    public void OnClickButtonSUS()
+    {
+        var selectedToggleSUS = susGroup.ActiveToggles().FirstOrDefault();
+
+        if (selectedToggleSUS)
+        {
+            Debug.Log(selectedToggleSUS.name);
+            
+            var sus = new SUS(setting.ID, finishCounter, int.Parse(selectedToggleSUS.name));
+            sus.InsertResult(connString);
+            susGroup.SetAllTogglesOff();
+            finishCounter++;
+            StartCoroutine(Finish());
+        }
+
+        if (finishCounter == 6)
+        {
+            StartCoroutine(ScreenSetups(false, false, false, false, "", false, false, true));
+        }
+    }
+
+    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikinOn = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false, bool buttonAbRNextOn = false, bool finishTextOn = false, bool susOn = false)
     {
         if (videoPlayer != null) videoPlayer.Stop();
         if (audioSource != null) audioSource.Stop();
@@ -458,6 +617,8 @@ public class MediaController : MonoBehaviour
         buttonAbRNext.gameObject.SetActive(buttonAbRNextOn);
 
         this.finishText.gameObject.SetActive(finishTextOn);
+
+        StartCoroutine(SUSSetups(susOn));
 
         yield return null;
     }
@@ -499,6 +660,21 @@ public class MediaController : MonoBehaviour
         yield return null;
     }
 
+    IEnumerator SUSSetups(bool susOn)
+    {
+        sus1.gameObject.SetActive(susOn);
+        sus2.gameObject.SetActive(susOn);
+        sus3.gameObject.SetActive(susOn);
+        sus4.gameObject.SetActive(susOn);
+        sus5.gameObject.SetActive(susOn);
+        sus6.gameObject.SetActive(susOn);
+        sus7.gameObject.SetActive(susOn);
+
+        buttonSUS.gameObject.SetActive(susOn);
+
+        yield return null;
+    }
+
     IEnumerator Sleep(float timeToWait)
     {
         float counter = 0;
@@ -512,5 +688,96 @@ public class MediaController : MonoBehaviour
             //Wait for a frame so that Unity doesn't freeze
             yield return null;
         }
+    }
+
+    IEnumerator SetNextStep()
+    {
+
+        switch (sequences[setting.Sequence, methodCounter])
+        {
+            case 0:
+                emotion = Emotion.Sad;
+                nextStep = NextStep.Video;
+                method = Method.Video;
+                break;
+            case 1:
+                emotion = Emotion.Anger;
+                nextStep = NextStep.Audio;
+                method = Method.Audio;
+                break;
+            case 2:
+                emotion = Emotion.Happy;
+                nextStep = NextStep.Image;
+                method = Method.Image;
+                break;
+            case 3:
+                emotion = Emotion.Exciting;
+                nextStep = NextStep.AbR;
+                method = Method.AbR;
+                break;
+            case 4:
+                emotion = Emotion.Anger;
+                nextStep = NextStep.AbR;
+                method = Method.AbR;
+                break;
+            case 5:
+                emotion = Emotion.Happy;
+                nextStep = NextStep.Video;
+                method = Method.Video;
+                break;
+            case 6:
+                emotion = Emotion.Exciting;
+                nextStep = NextStep.Audio;
+                method = Method.Audio;
+                break;
+            case 7:
+                emotion = Emotion.Sad;
+                nextStep = NextStep.Image;
+                method = Method.Image;
+                break;
+            case 8:
+                emotion = Emotion.Happy;
+                nextStep = NextStep.Audio;
+                method = Method.Audio;
+                break;
+            case 9:
+                emotion = Emotion.Exciting;
+                nextStep = NextStep.Image;
+                method = Method.Image;
+                break;
+            case 10:
+                emotion = Emotion.Sad;
+                nextStep = NextStep.AbR;
+                method = Method.AbR;
+                break;
+            case 11:
+                emotion = Emotion.Anger;
+                nextStep = NextStep.Video;
+                method = Method.Video;
+                break;
+            case 12:
+                emotion = Emotion.Exciting;
+                nextStep = NextStep.Image;
+                method = Method.Image;
+                break;
+            case 13:
+                emotion = Emotion.Sad;
+                nextStep = NextStep.AbR;
+                method = Method.AbR;
+                break;
+            case 14:
+                emotion = Emotion.Anger;
+                nextStep = NextStep.Video;
+                method = Method.Video;
+                break;
+            case 15:
+                emotion = Emotion.Happy;
+                nextStep = NextStep.Audio;
+                method = Method.Audio;
+                break;
+            default:
+                break;
+        }
+        yield return null;
     }
 }

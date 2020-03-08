@@ -11,9 +11,7 @@ namespace Assets.Scripts.Models
         public int UserId { get; set; }
         // 0=VR, 1=RW
         public int Environment { get; set; }
-        // 0=Sad, 1=Anger, 2=Happy, 3=Exciting
-        public int Emotion { get; set; }
-        // 24 combinations, from 0 to 23
+        // 16 combinations, from 0 to 15
         public int Sequence { get; set; }
 
         // 1 means clip 1, 2 means clip 2
@@ -31,7 +29,7 @@ namespace Assets.Scripts.Models
 
                     using (IDbCommand cmd = dbConnection.CreateCommand())
                     {
-                        cmd.CommandText = "SELECT id, emotion, sequence, videoClip, audioClip, imageClip FROM ExperimentSetting where userId=" + userId + " and environment = 0";
+                        cmd.CommandText = "SELECT id, sequence, videoClip, audioClip, imageClip FROM ExperimentSetting where userId=" + userId + " and environment = 0";
 
                         using (IDataReader reader = cmd.ExecuteReader())
                         {
@@ -40,11 +38,10 @@ namespace Assets.Scripts.Models
                             {
                                 setting.ID = reader.GetInt32(0);
                                 setting.Environment = 0;
-                                setting.Emotion = reader.GetInt32(1);
-                                setting.Sequence = reader.GetInt32(2);
-                                setting.VideoClip = reader.GetInt32(3);
-                                setting.AudioClip = reader.GetInt32(4);
-                                setting.ImageClip = reader.GetInt32(5);
+                                setting.Sequence = reader.GetInt32(1);
+                                setting.VideoClip = reader.GetInt32(2);
+                                setting.AudioClip = reader.GetInt32(3);
+                                setting.ImageClip = reader.GetInt32(4);
                             }
                             dbConnection.Close();
                             reader.Close();
