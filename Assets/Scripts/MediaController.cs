@@ -139,6 +139,8 @@ public class MediaController : MonoBehaviour
     public Toggle sus6;
     public Toggle sus7;
     public ToggleGroup susGroup;
+    public Text labelLeft;
+    public Text labelRight;
     public Button buttonSUS;
 
     // Start is called before the first frame update
@@ -301,11 +303,11 @@ public class MediaController : MonoBehaviour
             case Emotion.Exciting:
                 if (setting.VideoClip == 1)
                 {
-                    yield return StartCoroutine(Sleep(5));
+                    yield return StartCoroutine(Sleep(165));
                 }
                 else if (setting.VideoClip == 2)
                 {
-                    yield return StartCoroutine(Sleep(5));
+                    yield return StartCoroutine(Sleep(258));
                 }
                 break;
             case Emotion.Happy:
@@ -321,11 +323,11 @@ public class MediaController : MonoBehaviour
             case Emotion.Sad:
                 if (setting.VideoClip == 1)
                 {
-                    yield return StartCoroutine(Sleep(5));
+                    yield return StartCoroutine(Sleep(237));
                 }
                 else if (setting.VideoClip == 2)
                 {
-                    yield return StartCoroutine(Sleep(5));
+                    yield return StartCoroutine(Sleep(200));
                 }
                 break;
             default:
@@ -543,32 +545,32 @@ public class MediaController : MonoBehaviour
         switch (finishCounter)
         {
             case 0:
-                StartCoroutine(ScreenSetups(false, false, false, false, "Please rate your sense of being in this office space, on the following scale from 1 to 7, where 7 represents your normal experience of being in a place. \r\n\r\nI had a sense of “being there” in this office space:", false, false, false, true));
+                StartCoroutine(ScreenSetups(false, false, false, false, "Please rate your sense of being in this office space, on the following scale from 1 to 7, where 7 represents your normal experience of being in a place. \r\n\r\nI had a sense of “being there” in this office space:", false, false, false, true, "Not at all", "Very much"));
                 //LabelLeft.Text = "Not at all";
                 //LabelRight.Text = "Very much";
                 break;
             case 1:
-                StartCoroutine(ScreenSetups(false, false, false, false, "To what extent were there times during the experience when this office space was the reality for you? \r\n\r\nThere were times during the experience when this office space was the reality for me... ", false, false, false, true));
+                StartCoroutine(ScreenSetups(false, false, false, false, "To what extent were there times during the experience when this office space was the reality for you? \r\n\r\nThere were times during the experience when this office space was the reality for me... ", false, false, false, true, "At no time", "Almost all the time"));
                 //LabelLeft.Text = "At no time";
                 //LabelRight.Text = "Almost all the time";
                 break;
             case 2:
-                StartCoroutine(ScreenSetups(false, false, false, false, "When you think back about your experience, do you think of this office space more as images that you saw, or more as somewhere that you visited? \r\n\r\nThis office space seems to me to be more like...", false, false, false, true));
+                StartCoroutine(ScreenSetups(false, false, false, false, "When you think back about your experience, do you think of this office space more as images that you saw, or more as somewhere that you visited? \r\n\r\nThis office space seems to me to be more like...", false, false, false, true, "Images that I saw", "Somewhere that I visited"));
                 //LabelLeft.Text = "Images that I saw";
                 //LabelRight.Text = "Somewhere that I visited";
                 break;
             case 3:
-                StartCoroutine(ScreenSetups(false, false, false, false, "During the time of the experience, which was strongest on the whole, your sense of being in this office space, or of being elsewhere? \r\n\r\nI had a stronger sense of...", false, false, false, true));
+                StartCoroutine(ScreenSetups(false, false, false, false, "During the time of the experience, which was strongest on the whole, your sense of being in this office space, or of being elsewhere? \r\n\r\nI had a stronger sense of...", false, false, false, true, "Being elsewhere", "Being in this office space"));
                 //LabelLeft.Text = "Being elsewhere";
                 //LabelRight.Text = "Being in this office space";
                 break;
             case 4:
-                StartCoroutine(ScreenSetups(false, false, false, false, "Consider your memory of being in this office space. How similar in terms of the structure of the memory is this to the structure of the memory of other places you have been today? By ‘structure of the memory’ consider things like the extent to which you have a visual memory of the office space, whether that memory is in color, the extent to which the memory seems vivid or realistic, its size, location in your imagination, the extent to which it is panoramic in your imagination, and other such structural elements. \r\n\r\nI think of this office space as a place in a way similar to other places that I've been today...", false, false, false, true));
+                StartCoroutine(ScreenSetups(false, false, false, false, "Consider your memory of being in this office space. How similar in terms of the structure of the memory is this to the structure of the memory of other places you have been today? By ‘structure of the memory’ consider things like the extent to which you have a visual memory of the office space, whether that memory is in color, the extent to which the memory seems vivid or realistic, its size, location in your imagination, the extent to which it is panoramic in your imagination, and other such structural elements. \r\n\r\nI think of this office space as a place in a way similar to other places that I've been today...", false, false, false, true, "Not at all", "Very much so"));
                 //LabelLeft.Text = "Not at all";
                 //LabelRight.Text = "Very much so";
                 break;
             case 5:
-                StartCoroutine(ScreenSetups(false, false, false, false, "During the time of the experience, did you often think to yourself that you were actually in this office space? \r\n\r\nDuring the experience I often thought that I was really sitting in this office space...", false, false, false, true));
+                StartCoroutine(ScreenSetups(false, false, false, false, "During the time of the experience, did you often think to yourself that you were actually in this office space? \r\n\r\nDuring the experience I often thought that I was really sitting in this office space...", false, false, false, true, "Not very often", "Very much so"));
                 //LabelLeft.Text = "Not very often";
                 //LabelRight.Text = "Very much so";
                 break;
@@ -586,7 +588,7 @@ public class MediaController : MonoBehaviour
         if (selectedToggleSUS)
         {
             Debug.Log(selectedToggleSUS.name);
-            
+
             var sus = new SUS(setting.ID, finishCounter, int.Parse(selectedToggleSUS.name));
             sus.InsertResult(connString);
             susGroup.SetAllTogglesOff();
@@ -600,7 +602,7 @@ public class MediaController : MonoBehaviour
         }
     }
 
-    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikinOn = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false, bool buttonAbRNextOn = false, bool finishTextOn = false, bool susOn = false)
+    IEnumerator ScreenSetups(bool videoScreenOn = false, bool imageScreenOn = false, bool manikinOn = false, bool buttonStartExperimentOn = false, string topText = "", bool avatar = false, bool buttonAbRNextOn = false, bool finishTextOn = false, bool susOn = false, string labelLeft = "", string labelRight = "")
     {
         if (videoPlayer != null) videoPlayer.Stop();
         if (audioSource != null) audioSource.Stop();
@@ -618,7 +620,7 @@ public class MediaController : MonoBehaviour
 
         this.finishText.gameObject.SetActive(finishTextOn);
 
-        StartCoroutine(SUSSetups(susOn));
+        StartCoroutine(SUSSetups(susOn, labelLeft, labelRight));
 
         yield return null;
     }
@@ -660,7 +662,7 @@ public class MediaController : MonoBehaviour
         yield return null;
     }
 
-    IEnumerator SUSSetups(bool susOn)
+    IEnumerator SUSSetups(bool susOn, string labelLeft, string labelRight)
     {
         sus1.gameObject.SetActive(susOn);
         sus2.gameObject.SetActive(susOn);
@@ -671,6 +673,9 @@ public class MediaController : MonoBehaviour
         sus7.gameObject.SetActive(susOn);
 
         buttonSUS.gameObject.SetActive(susOn);
+
+        this.labelLeft.text = labelLeft;
+        this.labelRight.text = labelRight;
 
         yield return null;
     }

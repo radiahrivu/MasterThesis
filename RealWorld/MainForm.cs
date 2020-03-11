@@ -63,11 +63,11 @@ namespace RealWorld
         {
             ScreenSetups(false, false, false, true, MainScreenSetup.StartingText());
             // to change
-            //connString = "URI=file:C:/Ruoyu/MT002/Assets/DB" + "/Production.sqlite";
-            connString = "URI=file:C:/Ruoyu/MT002/Assets/DB" + "/Test.sqlite";
+            connString = "URI=file:C:/Ruoyu/MT002/Assets/DB" + "/Production.sqlite";
+            //connString = "URI=file:C:/Ruoyu/MT002/Assets/DB" + "/Test.sqlite";
 
             // to change
-            userId = 1;
+            userId = 3;
 
             setting = new ExperimentSetting();
             setting = setting.GetExperimentSettingByUserId(connString, userId);
