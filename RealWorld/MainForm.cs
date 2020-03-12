@@ -67,7 +67,7 @@ namespace RealWorld
             //connString = "URI=file:C:/Ruoyu/MT002/Assets/DB" + "/Test.sqlite";
 
             // to change
-            userId = 3;
+            userId = 14;
 
             setting = new ExperimentSetting();
             setting = setting.GetExperimentSettingByUserId(connString, userId);
