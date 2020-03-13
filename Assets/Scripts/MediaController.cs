@@ -153,7 +153,7 @@ public class MediaController : MonoBehaviour
         //connString = "URI=file:" + Application.dataPath + "/DB/Test.sqlite";
 
         // to change
-        userId = 7;
+        userId = 9;
 
         setting = new ExperimentSetting();
         setting = setting.GetExperimentSettingByUserId(connString, userId);
