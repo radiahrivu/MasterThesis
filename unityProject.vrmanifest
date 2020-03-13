@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.mt001.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Ruoyu\\MT002\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "C:\\Projects\\MasterThesis\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "MT001 [Testing]"
