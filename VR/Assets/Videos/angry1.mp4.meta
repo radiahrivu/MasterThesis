@@ -1,11 +1,8 @@
 fileFormatVersion: 2
-guid: ffb89742a42947f45bb4795f8409cf29
+guid: e4ea0ed4a7eeddd4885d63c66b43ab17
 VideoClipImporter:
   externalObjects: {}
   serializedVersion: 2
-  useLegacyImporter: 0
-  quality: 0.5
-  isColorLinear: 0
   frameRange: 0
   startFrame: -1
   endFrame: -1
