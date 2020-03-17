@@ -63,11 +63,11 @@ namespace RealWorld
         {
             ScreenSetups(false, false, false, true, MainScreenSetup.StartingText());
             // to change
-            connString = "URI=file:C:/Ruoyu/MT002/VR/Assets/DB" + "/Production.sqlite";
-            //connString = "URI=file:C:/Ruoyu/MT002/Assets/DB" + "/Test.sqlite";
+            connString = "URI=file:C:/Projects/Ruoyu MT/MasterThesis/VR/Assets/DB" + "/Production.sqlite";
+             //connString = "URI=file:C:/Ruoyu/MT002/Assets/DB" + "/Test.sqlite";
 
-            // to change
-            userId = 5;
+             // to change
+             userId = 16;
 
             setting = new ExperimentSetting();
             setting = setting.GetExperimentSettingByUserId(connString, userId);
@@ -157,7 +157,7 @@ namespace RealWorld
 
         void PlayVideo()
         {
-            var path = @"C:\Ruoyu\MT002\VR\Assets\Videos\";
+            var path = @"C:\Projects\Ruoyu MT\MasterThesis\VR\Assets\Videos\";
 
             switch (emotion)
             {
@@ -212,7 +212,7 @@ namespace RealWorld
 
         void PlayImage()
         {
-            var path = @"C:\Ruoyu\MT002\VR\Assets\Images\";
+            var path = @"C:\Projects\Ruoyu MT\MasterThesis\VR\Assets\Images\";
 
             switch (emotion)
             {
@@ -263,7 +263,7 @@ namespace RealWorld
 
         void PlayAudio()
         {
-            var path = @"C:\Ruoyu\MT002\VR\Assets\Audios\";
+            var path = @"C:\Projects\Ruoyu MT\MasterThesis\VR\Assets\Audios\";
 
             var player = new SoundPlayer();
 
