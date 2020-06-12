@@ -54,6 +54,12 @@ namespace RealWorld
         int methodCounter = 0;
         int finishCounter = 0;
 
+        /* Env on lab desktop */
+        //private string baseUri = @"C:\Projects\Ruoyu MT\MasterThesis\VR\Assets\";
+
+        /* Env on Ruoyu's Laptop */
+        private string baseUri = @"C:\Ruoyu\MasterThesis\VR\Assets\";
+
         public MainForm()
         {
             InitializeComponent();
@@ -63,11 +69,18 @@ namespace RealWorld
         {
             ScreenSetups(false, false, false, true, MainScreenSetup.StartingText());
             // to change
-            connString = "URI=file:C:/Projects/Ruoyu MT/MasterThesis/VR/Assets/DB" + "/Production.sqlite";
-             //connString = "URI=file:C:/Ruoyu/MT002/Assets/DB" + "/Test.sqlite";
 
-             // to change
-             userId = 16;
+            /* Test Env on Ruoyu's Laptop */
+            //connString = "URI=file:C:/Ruoyu/MasterThesis/VR/Assets/DB" + "/Test.sqlite";
+
+            /* Production Env on Ruoyu's Laptop */
+            connString = "URI=file:C:/Ruoyu/MasterThesis/VR/Assets/DB" + "/Production.sqlite";
+
+            /* Production Env on lab desktop */
+            //connString = "URI=file:C:/Projects/Ruoyu MT/MasterThesis/VR/Assets/DB" + "/Production.sqlite";
+
+            // to change
+            userId = 17;
 
             setting = new ExperimentSetting();
             setting = setting.GetExperimentSettingByUserId(connString, userId);
@@ -157,7 +170,7 @@ namespace RealWorld
 
         void PlayVideo()
         {
-            var path = @"C:\Projects\Ruoyu MT\MasterThesis\VR\Assets\Videos\";
+            var path = baseUri + @"Videos\";
 
             switch (emotion)
             {
@@ -212,7 +225,7 @@ namespace RealWorld
 
         void PlayImage()
         {
-            var path = @"C:\Projects\Ruoyu MT\MasterThesis\VR\Assets\Images\";
+            var path = baseUri + @"Images\";
 
             switch (emotion)
             {
@@ -263,7 +276,7 @@ namespace RealWorld
 
         void PlayAudio()
         {
-            var path = @"C:\Projects\Ruoyu MT\MasterThesis\VR\Assets\Audios\";
+            var path = baseUri + @"Audios\";
 
             var player = new SoundPlayer();
 
