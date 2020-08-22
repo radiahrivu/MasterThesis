@@ -80,7 +80,7 @@ namespace RealWorld
             //connString = "URI=file:C:/Projects/Ruoyu MT/MasterThesis/VR/Assets/DB" + "/Production.sqlite";
 
             // to change
-            userId = 50;
+            userId = 28;
 
             setting = new ExperimentSetting();
             setting = setting.GetExperimentSettingByUserId(connString, userId);
